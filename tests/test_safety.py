@@ -26,9 +26,10 @@ class TestSafety(unittest.TestCase):
         self.assertTrue(is_command_blocked('mel'))
         self.assertTrue(is_command_blocked('scriptJob'))
         self.assertTrue(is_command_blocked('scriptjob'))
-        # Test with different case
+        # Test with different case - these should work because command_lower is used
         self.assertTrue(is_command_blocked('EVAL'))
         self.assertTrue(is_command_blocked('Python'))
+        self.assertTrue(is_command_blocked('PYTHON'))
 
     def test_allowed_commands(self):
         """Test that safe commands are allowed."""
