@@ -401,7 +401,41 @@ def create_sphere(name: str, radius: float = 1.0) -> dict[str, str]:
 - **Maya Python API** - Autodesk Maya documentation
 - **Python Type Hints** - PEP 484, PEP 526
 
-### 13. Quick Reference
+### 13. Git Workflow
+
+#### Branch Management
+- **NEVER push directly to main branch** - Always create a feature or bugfix branch first
+- **Feature branches** - For new features, enhancements, or additions
+  - Format: `feature/descriptive-name`
+  - Examples: `feature/add-polygon-extrude`, `feature/add-camera-operations`
+- **Bugfix branches** - For bug fixes and corrections
+  - Format: `bugfix/descriptive-name` or `fix/descriptive-name`
+  - Examples: `bugfix/fix-test-assertion`, `fix/correct-type-hint`
+
+#### Workflow Steps
+1. **Check current branch**: `git branch --show-current`
+2. **Create feature/bugfix branch**: `git checkout -b feature/name` or `git checkout -b bugfix/name`
+3. **Make changes** - Edit files, add tests, update documentation
+4. **Stage changes**: `git add <files>` or `git add -A`
+5. **Commit changes**: `git commit -m "feat: description"` or `git commit -m "fix: description"`
+6. **Push to feature branch**: `git push -u origin feature/name` (NOT main!)
+7. **Create Pull Request** - Use GitHub UI or `gh pr create`
+
+#### Commit Message Format
+- **Features**: `feat: Add polygon extrude tool`
+- **Bugfixes**: `fix: Correct type hint in safety module`
+- **Documentation**: `docs: Add missing functionality analysis`
+- **Tests**: `test: Add tests for polygon operations`
+- **Refactoring**: `refactor: Improve error handling`
+
+#### Important Rules
+- ✅ **DO**: Create feature/bugfix branches for all changes
+- ✅ **DO**: Push to feature branches, then create PRs
+- ❌ **DON'T**: Commit or push directly to `main` branch
+- ❌ **DON'T**: Force push to shared branches
+- ❌ **DON'T**: Skip creating a branch for "small" changes
+
+### 14. Quick Reference
 
 #### Common Imports
 ```python
@@ -441,14 +475,21 @@ def my_prompt() -> str:
 
 When asked to modify or add code:
 
-1. **Read the relevant files** - Understand the existing code structure
-2. **Follow FastMCP patterns** - Use decorators and follow MCP conventions
-3. **Add type hints** - Always include type information
-4. **Handle errors** - Use specific exceptions and return structured errors
-5. **Test Maya availability** - Check if Maya is available before using it
-6. **Add tests** - Write tests for new functionality
-7. **Update docs** - Add/update docstrings as needed
-8. **Run tests** - Ensure tests pass before submitting
+1. **Create a feature or bugfix branch** - NEVER commit directly to main
+   - Feature branches: `feature/descriptive-name`
+   - Bugfix branches: `bugfix/descriptive-name` or `fix/descriptive-name`
+   - Example: `git checkout -b feature/add-polygon-extrude-tool`
+2. **Read the relevant files** - Understand the existing code structure
+3. **Follow FastMCP patterns** - Use decorators and follow MCP conventions
+4. **Add type hints** - Always include type information
+5. **Handle errors** - Use specific exceptions and return structured errors
+6. **Test Maya availability** - Check if Maya is available before using it
+7. **Add tests** - Write tests for new functionality
+8. **Update docs** - Add/update docstrings as needed
+9. **Run tests** - Ensure tests pass before submitting
+10. **Commit and push to feature branch** - Never push directly to main
+    - Commit: `git commit -m "feat: description"` or `git commit -m "fix: description"`
+    - Push: `git push -u origin feature/branch-name`
 
 ---
 
