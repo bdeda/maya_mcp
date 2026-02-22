@@ -21,6 +21,7 @@ from maya_mcp.tools import query  # noqa: F401
 from maya_mcp.tools import rendering  # noqa: F401
 from maya_mcp.tools import rigging  # noqa: F401
 from maya_mcp.tools import scene  # noqa: F401
+from maya_mcp.tools import sets  # noqa: F401
 from maya_mcp.tools import skinning  # noqa: F401
 from maya_mcp.tools import transform  # noqa: F401
 from maya_mcp.tools import uv  # noqa: F401
