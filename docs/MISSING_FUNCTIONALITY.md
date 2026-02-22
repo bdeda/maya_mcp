@@ -2,28 +2,29 @@
 
 This document outlines Maya.cmds API functionality that is **not currently covered** by the Maya MCP server. This serves as a roadmap for future enhancements.
 
-## Currently Covered (115+ tools)
+## Currently Covered (140+ tools)
 
 ✅ **Basic Operations**: Selection, queries, object creation, deletion, duplication  
 ✅ **Polygon Primitives**: Cube, sphere, plane, cylinder  
 ✅ **Transforms**: Move, rotate, scale, parent  
 ✅ **Attributes**: Get/set, add, connect/disconnect  
 ✅ **Basic Mesh Operations**: Vertex/face/edge queries, combine  
-✅ **Mesh Editing**: Extrude faces/edges, bevel, smooth, boolean operations (union/difference/intersection), merge vertices, split faces, collapse edges, triangulate, separate mesh  
+✅ **Mesh Editing**: Extrude faces/edges, bevel, smooth, boolean operations (union/difference/intersection), merge vertices, split faces, collapse edges, triangulate, separate mesh, polygon normals, quadrangulate, reduce, remesh, flip UVs, normalize UVs, planar projection, UV projection, smooth faces, soften edges, transfer attributes  
 ✅ **Rigging**: Joints, IK handles, basic constraints (parent, point, orient)  
 ✅ **Skinning**: Bind skin, get skin cluster info  
 ✅ **Paint Tools**: Get/set skin weights  
-✅ **Animation**: Keyframes, time control, animation layers  
+✅ **Animation**: Keyframes, time control, animation layers, bake results, bake simulation, copy/paste keyframes, scale/snap/select keyframes, query keyframe info  
 ✅ **Display Layers**: Create, manage, visibility  
 ✅ **Lights**: Directional, point, spot, area  
 ✅ **UV Editing**: Get/set UVs, layout, snapshots  
-✅ **Materials**: Lambert, Phong, Blinn creation and assignment, file texture, ramp texture, place2dTexture  
+✅ **Materials**: Lambert, Phong, Blinn, surface shader, use background, layered shader, ramp shader, generic shading node creation, file texture, ramp texture, place2dTexture  
 ✅ **Rendering**: Playblast, software rendering  
 ✅ **File Operations**: Open, save, import, export  
 ✅ **Cameras**: Create cameras (perspective/orthographic), set focal length, look through camera, list cameras, view fit, view selected  
 ✅ **NURBS**: Circle, sphere, cylinder primitives, curves from points, loft, revolve, attach curves, close curve, planar surface  
 ✅ **Constraints**: Aim, scale, geometry, normal, tangent, pole vector constraints, remove constraints  
-✅ **Deformers**: Blend shape, cluster, lattice, non-linear (bend, twist, sine, squash), list deformers  
+✅ **Deformers**: Blend shape, cluster, lattice, non-linear (bend, twist, sine, squash), sculpt, wire, wrinkle, jiggle, softMod, tension, deltaMush, shrinkWrap, wrap, list deformers  
+✅ **Sets and Partitions**: Create sets/partitions, add/remove from sets, list sets, get set members  
 
 ## Missing Functionality by Category
 
@@ -41,13 +42,13 @@ This document outlines Maya.cmds API functionality that is **not currently cover
 - `polyCut` - Cut faces
 - `polyMergeEdge` - Merge edges
 - ✅ `polyMergeVertex` - Merge vertices (IMPLEMENTED)
-- `polyNormal` - Normal operations
+- ✅ `polyNormal` - Normal operations (IMPLEMENTED)
 - ✅ `polySmooth` - Smooth mesh (IMPLEMENTED)
 - `polySubdivideFace` - Subdivide faces
 - ✅ `polyTriangulate` - Triangulate mesh (IMPLEMENTED)
-- `polyQuadrangulate` - Convert to quads
-- `polyReduce` - Reduce polygon count
-- `polyRemesh` - Remesh operations
+- ✅ `polyQuadrangulate` - Convert to quads (IMPLEMENTED)
+- ✅ `polyReduce` - Reduce polygon count (IMPLEMENTED)
+- ✅ `polyRemesh` - Remesh operations (IMPLEMENTED)
 - `polyCrease` - Crease edges/vertices
 - `polySewEdge` - Sew edges together
 - ✅ `polySplit` - Split faces (IMPLEMENTED)
@@ -61,19 +62,19 @@ This document outlines Maya.cmds API functionality that is **not currently cover
 - `polyDelVertex` - Delete vertices
 - `polyDuplicateEdge` - Duplicate edges
 - `polyFlipEdge` - Flip edges
-- `polyFlipUV` - Flip UVs
+- ✅ `polyFlipUV` - Flip UVs (IMPLEMENTED)
 - `polyMoveEdge` - Move edges
 - `polyMoveFace` - Move faces
 - `polyMoveVertex` - Move vertices
-- `polyNormalizeUV` - Normalize UVs
-- `polyPlanarProjection` - Planar UV projection
-- `polyProjection` - Various UV projections
+- ✅ `polyNormalizeUV` - Normalize UVs (IMPLEMENTED)
+- ✅ `polyPlanarProjection` - Planar UV projection (IMPLEMENTED)
+- ✅ `polyProjection` - Various UV projections (IMPLEMENTED)
 - ✅ `polySeparate` - Separate mesh components (IMPLEMENTED)
-- `polySmoothFace` - Smooth specific faces
-- `polySoftEdge` - Soften edges
+- ✅ `polySmoothFace` - Smooth specific faces (IMPLEMENTED)
+- ✅ `polySoftEdge` - Soften edges (IMPLEMENTED)
 - `polySplitVertex` - Split vertices
 - `polySubdivideEdge` - Subdivide edges
-- `polyTransfer` - Transfer attributes between meshes
+- ✅ `polyTransfer` - Transfer attributes between meshes (IMPLEMENTED)
 - ✅ `polyUnite` - Boolean union (IMPLEMENTED via boolean_union)
 - ✅ Boolean difference/intersection (IMPLEMENTED)
 - `polyWedgeFace` - Wedge faces
@@ -146,15 +147,15 @@ This document outlines Maya.cmds API functionality that is **not currently cover
 - ✅ `blendShape` - Blend shape deformer (IMPLEMENTED)
 - ✅ `cluster` - Cluster deformer (IMPLEMENTED)
 - ✅ `lattice` - Lattice deformer (IMPLEMENTED)
-- `sculpt` - Sculpt deformer
-- `wire` - Wire deformer
-- `wrinkle` - Wrinkle deformer
-- `jiggle` - Jiggle deformer
-- `softMod` - Soft modification
-- `tension` - Tension deformer
-- `deltaMush` - Delta mush deformer
-- `shrinkWrap` - Shrink wrap deformer
-- `wrap` - Wrap deformer
+- ✅ `sculpt` - Sculpt deformer (IMPLEMENTED)
+- ✅ `wire` - Wire deformer (IMPLEMENTED)
+- ✅ `wrinkle` - Wrinkle deformer (IMPLEMENTED)
+- ✅ `jiggle` - Jiggle deformer (IMPLEMENTED)
+- ✅ `softMod` - Soft modification (IMPLEMENTED)
+- ✅ `tension` - Tension deformer (IMPLEMENTED)
+- ✅ `deltaMush` - Delta mush deformer (IMPLEMENTED)
+- ✅ `shrinkWrap` - Shrink wrap deformer (IMPLEMENTED)
+- ✅ `wrap` - Wrap deformer (IMPLEMENTED)
 - ✅ `nonLinear` - Non-linear deformers: bend, twist, sine, squash (IMPLEMENTED)
 - `nonLinear` - Non-linear deformers: flare, wave (still missing)
 
@@ -213,14 +214,14 @@ This document outlines Maya.cmds API functionality that is **not currently cover
 - `animCurveEditor` - Graph editor operations
 - `dopeSheetEditor` - Dope sheet operations
 - `timeEditor` - Time editor operations
-- `bakeResults` - Bake animation
-- `bakeSimulation` - Bake simulation
-- `copyKey` - Copy keyframes
-- `pasteKey` - Paste keyframes
-- `scaleKey` - Scale keyframes
-- `snapKey` - Snap keyframes
-- `selectKey` - Select keyframes
-- `keyframe` - More keyframe operations
+- ✅ `bakeResults` - Bake animation (IMPLEMENTED)
+- ✅ `bakeSimulation` - Bake simulation (IMPLEMENTED)
+- ✅ `copyKey` - Copy keyframes (IMPLEMENTED)
+- ✅ `pasteKey` - Paste keyframes (IMPLEMENTED)
+- ✅ `scaleKey` - Scale keyframes (IMPLEMENTED)
+- ✅ `snapKey` - Snap keyframes (IMPLEMENTED)
+- ✅ `selectKey` - Select keyframes (IMPLEMENTED)
+- ✅ `keyframe` - More keyframe operations (IMPLEMENTED)
 - `findKeyframe` - Find keyframes
 - `keyTangent` - Keyframe tangents
 - `keyframeOutliner` - Keyframe outliner
@@ -264,11 +265,11 @@ This document outlines Maya.cmds API functionality that is **not currently cover
 ### 8. Advanced Materials and Shading (Partially Covered)
 
 **Missing material types:**
-- `surfaceShader` - Surface shader
-- `useBackground` - Use background
-- `layeredShader` - Layered shader
-- `rampShader` - Ramp shader
-- `shadingNode` - Generic shading node creation
+- ✅ `surfaceShader` - Surface shader (IMPLEMENTED)
+- ✅ `useBackground` - Use background (IMPLEMENTED)
+- ✅ `layeredShader` - Layered shader (IMPLEMENTED)
+- ✅ `rampShader` - Ramp shader (IMPLEMENTED)
+- ✅ `shadingNode` - Generic shading node creation (IMPLEMENTED)
 - `aiStandardSurface` - Arnold materials (if available)
 - `aiStandardHair` - Arnold hair materials
 - `aiVolume` - Arnold volume materials
@@ -456,13 +457,13 @@ This document outlines Maya.cmds API functionality that is **not currently cover
 - `referenceQuery` - Query references
 - `file` - File reference operations (more options)
 
-### 14. Sets and Partitions (Not Covered)
+### 14. Sets and Partitions (Partially Covered)
 
 **Set operations:**
-- `sets` - Create sets
-- `partition` - Create partitions
-- `addToSet` - Add to set
-- `removeFromSet` - Remove from set
+- ✅ `sets` - Create sets (IMPLEMENTED)
+- ✅ `partition` - Create partitions (IMPLEMENTED)
+- ✅ `addToSet` - Add to set (IMPLEMENTED)
+- ✅ `removeFromSet` - Remove from set (IMPLEMENTED)
 
 ### 15. Expressions (Not Covered - Blocked for Safety)
 
@@ -480,11 +481,11 @@ This document outlines Maya.cmds API functionality that is **not currently cover
 ### 17. Advanced Selection (Partially Covered)
 
 **Missing selection operations:**
-- `select` - More selection options
-- `selectMode` - Selection mode
-- `selectType` - Selection type
-- `hilite` - Highlight
-- `selectPref` - Selection preferences
+- ✅ `select` - More selection options (IMPLEMENTED - with modes: replace, add, toggle, deselect)
+- ✅ `selectMode` - Selection mode (IMPLEMENTED)
+- ✅ `selectType` - Selection type (IMPLEMENTED)
+- ✅ `hilite` - Highlight (IMPLEMENTED)
+- ✅ `selectPref` - Selection preferences (IMPLEMENTED)
 - Component selection (vertices, edges, faces, UVs)
 - Selection sets
 - Selection constraints
@@ -697,19 +698,22 @@ This document outlines Maya.cmds API functionality that is **not currently cover
 
 ### Coverage Estimate
 
-- **Currently Covered**: ~115+ tools across 24 modules
+- **Currently Covered**: ~140+ tools across 24 modules
 - **Estimated Total Maya.cmds Commands**: ~500-800+ commands
-- **Coverage**: ~15-20% of available commands
+- **Coverage**: ~18-25% of available commands
 
 ### Priority Areas for Future Development
 
 1. **High Priority** (Common workflows):
-   - ✅ Polygon mesh editing operations (extrude, bevel, etc.) - PARTIALLY IMPLEMENTED
+   - ✅ Polygon mesh editing operations (extrude, bevel, normals, quadrangulate, reduce, remesh, UV operations, etc.) - EXTENSIVELY IMPLEMENTED
    - ✅ NURBS operations (curves and surfaces) - PARTIALLY IMPLEMENTED
    - ✅ Advanced constraints (aim, scale, geometry, normal, tangent, pole vector) - MOSTLY IMPLEMENTED
    - ✅ Camera operations - PARTIALLY IMPLEMENTED
-   - ✅ Advanced material/texture operations - PARTIALLY IMPLEMENTED
+   - ✅ Advanced material/texture operations (surface shader, use background, layered shader, ramp shader, generic shading nodes) - EXTENSIVELY IMPLEMENTED
    - ✅ Paint tools (skin weights) - BASIC OPERATIONS IMPLEMENTED
+   - ✅ Animation tools (bake, copy/paste keyframes, scale/snap/select keyframes) - EXTENSIVELY IMPLEMENTED
+   - ✅ Deformers (sculpt, wire, wrinkle, jiggle, softMod, tension, deltaMush, shrinkWrap, wrap) - EXTENSIVELY IMPLEMENTED
+   - ✅ Sets and partitions - IMPLEMENTED
 
 2. **Medium Priority** (Specialized workflows):
    - Deformers
