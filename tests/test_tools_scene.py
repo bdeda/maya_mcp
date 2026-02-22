@@ -88,6 +88,70 @@ class TestSceneTools(unittest.TestCase):
             self.assertEqual(result['status'], 'success')
             mock_cmds.select.assert_called_once_with(clear=True)
 
+    def test_select_with_mode_add(self):
+        """Test select_with_mode with add mode."""
+        with mock_maya_available() as mock_cmds:
+            mock_cmds.objExists.return_value = True
+            
+            result = scene.select_with_mode(['pCube1'], mode='add')
+            
+            self.assertEqual(result['status'], 'success')
+            mock_cmds.select.assert_called_once()
+
+    def test_set_selection_mode_success(self):
+        """Test set_selection_mode successfully sets mode."""
+        with mock_maya_available() as mock_cmds:
+            result = scene.set_selection_mode('component')
+            
+            self.assertEqual(result['status'], 'success')
+            mock_cmds.selectMode.assert_called_once()
+
+    def test_get_selection_mode_success(self):
+        """Test get_selection_mode successfully gets mode."""
+        with mock_maya_available() as mock_cmds:
+            mock_cmds.selectMode.return_value = 'object'
+            
+            result = scene.get_selection_mode()
+            
+            self.assertEqual(result['status'], 'success')
+            self.assertEqual(result['mode'], 'object')
+
+    def test_set_selection_type_success(self):
+        """Test set_selection_type successfully sets type."""
+        with mock_maya_available() as mock_cmds:
+            result = scene.set_selection_type('vertex', enabled=True)
+            
+            self.assertEqual(result['status'], 'success')
+            mock_cmds.selectType.assert_called_once()
+
+    def test_highlight_object_success(self):
+        """Test highlight_object successfully highlights object."""
+        with mock_maya_available() as mock_cmds:
+            mock_cmds.objExists.return_value = True
+            
+            result = scene.highlight_object('pCube1', highlight=True)
+            
+            self.assertEqual(result['status'], 'success')
+            mock_cmds.hilite.assert_called_once()
+
+    def test_get_selection_preferences_success(self):
+        """Test get_selection_preferences successfully gets preferences."""
+        with mock_maya_available() as mock_cmds:
+            mock_cmds.selectPref.side_effect = [True, False, True, False]
+            
+            result = scene.get_selection_preferences()
+            
+            self.assertEqual(result['status'], 'success')
+            self.assertIn('preferences', result)
+
+    def test_set_selection_preference_success(self):
+        """Test set_selection_preference successfully sets preference."""
+        with mock_maya_available() as mock_cmds:
+            result = scene.set_selection_preference('trackSelectionOrder', True)
+            
+            self.assertEqual(result['status'], 'success')
+            mock_cmds.selectPref.assert_called_once()
+
 
 if __name__ == '__main__':
     unittest.main()
