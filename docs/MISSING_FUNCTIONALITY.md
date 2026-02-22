@@ -540,10 +540,11 @@ This document outlines Maya.cmds API functionality that is **not currently cover
 ### 21. Viewport and Display (Partially Covered)
 
 **Missing viewport operations:**
-- `viewFit` - Fit view
+- ✅ `viewFit` - Fit view (IMPLEMENTED)
+- ✅ `viewSelected` - View selected (IMPLEMENTED)
 - `viewPlace` - Place view
 - `viewSet` - Set view
-- `lookThrough` - Look through
+- ✅ `lookThrough` - Look through camera (IMPLEMENTED)
 - `dolly` - Dolly
 - `tumble` - Tumble
 - `track` - Track
@@ -552,23 +553,15 @@ This document outlines Maya.cmds API functionality that is **not currently cover
 - `viewClipPlane` - View clip plane
 - `viewHeadOn` - View head on
 - `viewManip` - View manipulator
-- `viewSelected` - View selected
 - `view2dToolCtx` - 2D view tool
 - `view3dToolCtx` - 3D view tool
 - `viewAxis` - View axis
 - `viewBookmark` - View bookmarks
 - `viewCamera` - View camera
-- `viewClipPlane` - View clip plane
 - `viewColor` - View color
 - `viewCompass` - View compass
-- `viewFit` - Fit view
 - `viewFrame` - Frame view
-- `viewHeadOn` - Head on view
 - `viewLookAt` - Look at view
-- `viewManip` - View manipulator
-- `viewPlace` - Place view
-- `viewSelected` - View selected
-- `viewSet` - Set view
 - `viewTrack` - Track view
 
 ### 22. Advanced Animation Curves (Partially Covered)
