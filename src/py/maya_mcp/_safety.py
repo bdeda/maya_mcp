@@ -7,42 +7,44 @@ and ensure safe operation of the MCP server.
 from typing import Any
 
 # Commands that should never be exposed via MCP
+# All entries are lowercase for case-insensitive matching
 BLOCKED_COMMANDS = {
-    'scriptNode',  # Creates script nodes that execute code
+    'scriptnode',  # Creates script nodes that execute code
     'eval',  # Executes arbitrary MEL/Python code
-    'evalDeferred',  # Executes deferred code
-    'evalEcho',  # Echoes eval output
+    'evaldeferred',  # Executes deferred code
+    'evalecho',  # Echoes eval output
     'python',  # Executes Python code
     'mel',  # Executes MEL code
     'source',  # Sources script files
-    'scriptJob',  # Creates script callbacks
+    'scriptjob',  # Creates script callbacks
     'callbacks',  # Manages callbacks
     'callback',  # Creates callbacks
-    'eval',  # General eval command
     'dgeval',  # Dependency graph evaluation
 }
 
 # Commands that create callbacks (should be blocked)
+# All entries are lowercase for case-insensitive matching
 CALLBACK_COMMANDS = {
-    'scriptJob',
+    'scriptjob',
     'callbacks',
     'callback',
-    'addCallback',
-    'removeCallback',
-    'callbackManager',
+    'addcallback',
+    'removecallback',
+    'callbackmanager',
 }
 
 # Commands that execute scripts (should be blocked)
+# All entries are lowercase for case-insensitive matching
 SCRIPT_EXECUTION_COMMANDS = {
-    'scriptNode',
+    'scriptnode',
     'eval',
-    'evalDeferred',
-    'evalEcho',
+    'evaldeferred',
+    'evalecho',
     'python',
     'mel',
     'source',
-    'runTimeCommand',  # Creates runtime commands
-    'nameCommand',  # Creates name commands
+    'runtimecommand',  # Creates runtime commands
+    'namecommand',  # Creates name commands
 }
 
 

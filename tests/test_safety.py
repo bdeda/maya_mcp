@@ -83,18 +83,18 @@ class TestSafety(unittest.TestCase):
     def test_blocked_commands_set(self):
         """Test that blocked commands set is not empty."""
         self.assertGreater(len(BLOCKED_COMMANDS), 0)
-        self.assertIn('scriptNode', BLOCKED_COMMANDS)
+        self.assertIn('scriptnode', BLOCKED_COMMANDS)
         self.assertIn('eval', BLOCKED_COMMANDS)
 
     def test_callback_commands_set(self):
         """Test that callback commands set is not empty."""
         self.assertGreater(len(CALLBACK_COMMANDS), 0)
-        self.assertIn('scriptJob', CALLBACK_COMMANDS)
+        self.assertIn('scriptjob', CALLBACK_COMMANDS)
 
     def test_script_execution_commands_set(self):
         """Test that script execution commands set is not empty."""
         self.assertGreater(len(SCRIPT_EXECUTION_COMMANDS), 0)
-        self.assertIn('scriptNode', SCRIPT_EXECUTION_COMMANDS)
+        self.assertIn('scriptnode', SCRIPT_EXECUTION_COMMANDS)
         self.assertIn('eval', SCRIPT_EXECUTION_COMMANDS)
 
 
