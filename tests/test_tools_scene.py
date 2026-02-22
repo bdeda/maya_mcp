@@ -71,7 +71,7 @@ class TestSceneTools(unittest.TestCase):
             result = scene.select_objects(['nonexistent'])
             
             self.assertEqual(result['status'], 'error')
-            self.assertIn('not found', result['message'])
+            self.assertIn('None of the objects exist', result['message'])
 
     def test_clear_selection_no_maya(self):
         """Test clear_selection when Maya is not available."""
