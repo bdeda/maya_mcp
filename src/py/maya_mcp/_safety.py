@@ -4,6 +4,8 @@ This module provides functions to filter out dangerous Maya commands
 and ensure safe operation of the MCP server.
 """
 
+from typing import Any
+
 # Commands that should never be exposed via MCP
 BLOCKED_COMMANDS = {
     'scriptNode',  # Creates script nodes that execute code
@@ -82,7 +84,7 @@ def is_command_blocked(command_name: str) -> bool:
     return False
 
 
-def safe_maya_command(command_name: str, *args, **kwargs) -> dict[str, str | any]:
+def safe_maya_command(command_name: str, *args, **kwargs) -> dict[str, str | Any]:
     """Safely execute a Maya command with error handling.
     
     Args:
