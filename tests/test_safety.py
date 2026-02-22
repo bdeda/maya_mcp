@@ -1,8 +1,9 @@
 """Tests for safety module."""
 
 import unittest
-from unittest.mock import patch
+from unittest.mock import patch, MagicMock
 
+from tests.test_helpers import mock_maya_available
 from maya_mcp._safety import (
     BLOCKED_COMMANDS,
     CALLBACK_COMMANDS,
@@ -17,11 +18,17 @@ class TestSafety(unittest.TestCase):
 
     def test_blocked_commands(self):
         """Test that blocked commands are identified."""
+        # Test exact matches (case-insensitive)
         self.assertTrue(is_command_blocked('scriptNode'))
+        self.assertTrue(is_command_blocked('scriptnode'))
         self.assertTrue(is_command_blocked('eval'))
         self.assertTrue(is_command_blocked('python'))
         self.assertTrue(is_command_blocked('mel'))
         self.assertTrue(is_command_blocked('scriptJob'))
+        self.assertTrue(is_command_blocked('scriptjob'))
+        # Test with different case
+        self.assertTrue(is_command_blocked('EVAL'))
+        self.assertTrue(is_command_blocked('Python'))
 
     def test_allowed_commands(self):
         """Test that safe commands are allowed."""
@@ -37,29 +44,40 @@ class TestSafety(unittest.TestCase):
         
         self.assertIn('blocked', str(context.exception).lower())
 
-    @patch('maya_mcp._safety.maya')
-    def test_safe_maya_command_success(self, mock_maya):
+    def test_safe_maya_command_success(self):
         """Test successful command execution."""
-        mock_cmds = unittest.mock.MagicMock()
-        mock_cmds.polyCube.return_value = ['pCube1', 'pCubeShape1']
-        mock_maya.cmds = mock_cmds
-        
-        result = safe_maya_command('polyCube', width=1.0)
-        
-        self.assertEqual(result['status'], 'success')
-        self.assertIn('result', result)
+        with mock_maya_available() as mock_cmds:
+            # Create a mock that has polyCube attribute
+            mock_cmds.polyCube = MagicMock(return_value=['pCube1', 'pCubeShape1'])
+            
+            # Patch hasattr to return True for polyCube
+            original_hasattr = hasattr
+            def mock_hasattr(obj, name):
+                if name == 'polyCube':
+                    return True
+                return original_hasattr(obj, name)
+            
+            with patch('builtins.hasattr', side_effect=mock_hasattr):
+                result = safe_maya_command('polyCube', width=1.0)
+                
+                self.assertEqual(result['status'], 'success')
+                self.assertIn('result', result)
 
-    @patch('maya_mcp._safety.maya')
-    def test_safe_maya_command_nonexistent(self, mock_maya):
+    def test_safe_maya_command_nonexistent(self):
         """Test command that doesn't exist."""
-        mock_cmds = unittest.mock.MagicMock()
-        mock_cmds.__getattr__ = unittest.mock.MagicMock(side_effect=AttributeError('noSuchCommand'))
-        mock_maya.cmds = mock_cmds
-        
-        result = safe_maya_command('noSuchCommand')
-        
-        self.assertEqual(result['status'], 'error')
-        self.assertIn('does not exist', result['message'])
+        with mock_maya_available() as mock_cmds:
+            # Patch hasattr to return False for noSuchCommand
+            original_hasattr = hasattr
+            def mock_hasattr(obj, name):
+                if name == 'noSuchCommand':
+                    return False
+                return original_hasattr(obj, name)
+            
+            with patch('builtins.hasattr', side_effect=mock_hasattr):
+                result = safe_maya_command('noSuchCommand')
+                
+                self.assertEqual(result['status'], 'error')
+                self.assertIn('does not exist', result['message'])
 
     def test_blocked_commands_set(self):
         """Test that blocked commands set is not empty."""
