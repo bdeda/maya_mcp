@@ -218,9 +218,99 @@ def list_cameras() -> dict[str, Any]:
         }
 
 
+@mcp.tool
+def view_fit(
+    objects: list[str] | None = None,
+    all_objects: bool = False
+) -> dict[str, Any]:
+    """Fit the view to show objects.
+    
+    Args:
+        objects: Optional list of object names to fit view to. If None, fit to selection.
+        all_objects: If True, fit view to all objects in scene.
+    
+    Returns:
+        Dictionary with 'status' and 'message'.
+    """
+    try:
+        import maya.cmds as cmds
+    except ImportError:
+        return {
+            'status': 'error',
+            'message': 'Maya is not available',
+        }
+    
+    try:
+        if all_objects:
+            cmds.viewFit(allObjects=True)
+        elif objects:
+            existing = [obj for obj in objects if cmds.objExists(obj)]
+            if existing:
+                cmds.select(existing, replace=True)
+                cmds.viewFit()
+            else:
+                return {
+                    'status': 'error',
+                    'message': f'None of the objects exist: {objects}',
+                }
+        else:
+            cmds.viewFit()
+        
+        return {
+            'status': 'success',
+            'message': 'Fitted view to objects',
+        }
+    except RuntimeError as err:
+        return {
+            'status': 'error',
+            'message': f'Maya error: {err}',
+        }
+    except Exception as err:
+        return {
+            'status': 'error',
+            'message': f'Unexpected error: {err}',
+        }
+
+
+@mcp.tool
+def view_selected() -> dict[str, Any]:
+    """Fit the view to show selected objects.
+    
+    Returns:
+        Dictionary with 'status' and 'message'.
+    """
+    try:
+        import maya.cmds as cmds
+    except ImportError:
+        return {
+            'status': 'error',
+            'message': 'Maya is not available',
+        }
+    
+    try:
+        cmds.viewFit()
+        
+        return {
+            'status': 'success',
+            'message': 'Fitted view to selected objects',
+        }
+    except RuntimeError as err:
+        return {
+            'status': 'error',
+            'message': f'Maya error: {err}',
+        }
+    except Exception as err:
+        return {
+            'status': 'error',
+            'message': f'Unexpected error: {err}',
+        }
+
+
 __all__ = [
     'create_camera',
     'set_camera_focal_length',
     'look_through_camera',
     'list_cameras',
+    'view_fit',
+    'view_selected',
 ]

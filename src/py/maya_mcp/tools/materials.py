@@ -374,10 +374,148 @@ def list_materials() -> dict[str, Any]:
         }
 
 
+@mcp.tool
+def create_file_texture(
+    file_path: str,
+    name: str | None = None
+) -> dict[str, Any]:
+    """Create a file texture node.
+    
+    Args:
+        file_path: Path to the texture file.
+        name: Optional name for the file texture node.
+    
+    Returns:
+        Dictionary with 'status', 'texture' (file node name), and 'message'.
+    """
+    try:
+        import maya.cmds as cmds
+    except ImportError:
+        return {
+            'status': 'error',
+            'message': 'Maya is not available',
+        }
+    
+    try:
+        kwargs = {'imageName': file_path}
+        if name:
+            kwargs['name'] = name
+        
+        file_node = cmds.shadingNode('file', asTexture=True, **kwargs)
+        
+        return {
+            'status': 'success',
+            'message': f'Created file texture: {file_node}',
+            'texture': file_node,
+            'file_path': file_path,
+        }
+    except RuntimeError as err:
+        return {
+            'status': 'error',
+            'message': f'Maya error: {err}',
+        }
+    except Exception as err:
+        return {
+            'status': 'error',
+            'message': f'Unexpected error: {err}',
+        }
+
+
+@mcp.tool
+def create_ramp_texture(
+    name: str | None = None
+) -> dict[str, Any]:
+    """Create a ramp texture node.
+    
+    Args:
+        name: Optional name for the ramp texture node.
+    
+    Returns:
+        Dictionary with 'status', 'texture' (ramp node name), and 'message'.
+    """
+    try:
+        import maya.cmds as cmds
+    except ImportError:
+        return {
+            'status': 'error',
+            'message': 'Maya is not available',
+        }
+    
+    try:
+        kwargs = {}
+        if name:
+            kwargs['name'] = name
+        
+        ramp_node = cmds.shadingNode('ramp', asTexture=True, **kwargs)
+        
+        return {
+            'status': 'success',
+            'message': f'Created ramp texture: {ramp_node}',
+            'texture': ramp_node,
+        }
+    except RuntimeError as err:
+        return {
+            'status': 'error',
+            'message': f'Maya error: {err}',
+        }
+    except Exception as err:
+        return {
+            'status': 'error',
+            'message': f'Unexpected error: {err}',
+        }
+
+
+@mcp.tool
+def create_place2d_texture(
+    name: str | None = None
+) -> dict[str, Any]:
+    """Create a 2D texture placement node.
+    
+    Args:
+        name: Optional name for the placement node.
+    
+    Returns:
+        Dictionary with 'status', 'placement' (placement node name), and 'message'.
+    """
+    try:
+        import maya.cmds as cmds
+    except ImportError:
+        return {
+            'status': 'error',
+            'message': 'Maya is not available',
+        }
+    
+    try:
+        kwargs = {}
+        if name:
+            kwargs['name'] = name
+        
+        placement_node = cmds.shadingNode('place2dTexture', asUtility=True, **kwargs)
+        
+        return {
+            'status': 'success',
+            'message': f'Created 2D texture placement: {placement_node}',
+            'placement': placement_node,
+        }
+    except RuntimeError as err:
+        return {
+            'status': 'error',
+            'message': f'Maya error: {err}',
+        }
+    except Exception as err:
+        return {
+            'status': 'error',
+            'message': f'Unexpected error: {err}',
+        }
+
+
 __all__ = [
     'create_lambert_material',
     'create_phong_material',
     'create_blinn_material',
+    'create_file_texture',
+    'create_ramp_texture',
+    'create_place2d_texture',
     'assign_material',
     'get_assigned_material',
     'list_materials',

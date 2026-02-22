@@ -334,10 +334,201 @@ def create_twist_deformer(
         }
 
 
+@mcp.tool
+def create_sine_deformer(
+    object_name: str,
+    amplitude: float = 0.0,
+    wavelength: float = 2.0,
+    low_bound: float = -1.0,
+    high_bound: float = 1.0,
+    name: str | None = None
+) -> dict[str, Any]:
+    """Create a sine (non-linear) deformer.
+    
+    Args:
+        object_name: Name of the object to deform.
+        amplitude: Amplitude value.
+        wavelength: Wavelength value.
+        low_bound: Low bound value.
+        high_bound: High bound value.
+        name: Optional name for the deformer.
+    
+    Returns:
+        Dictionary with 'status', 'deformer' (deformer handle), and 'message'.
+    """
+    try:
+        import maya.cmds as cmds
+    except ImportError:
+        return {
+            'status': 'error',
+            'message': 'Maya is not available',
+        }
+    
+    try:
+        if not cmds.objExists(object_name):
+            return {
+                'status': 'error',
+                'message': f'Object "{object_name}" does not exist',
+            }
+        
+        kwargs = {
+            'amplitude': amplitude,
+            'wavelength': wavelength,
+            'lowBound': low_bound,
+            'highBound': high_bound,
+        }
+        if name:
+            kwargs['name'] = name
+        
+        result = cmds.nonLinear(object_name, type='sine', **kwargs)
+        deformer = result[0] if result else None
+        
+        return {
+            'status': 'success',
+            'message': f'Created sine deformer for {object_name}',
+            'deformer': deformer,
+        }
+    except RuntimeError as err:
+        return {
+            'status': 'error',
+            'message': f'Maya error: {err}',
+        }
+    except Exception as err:
+        return {
+            'status': 'error',
+            'message': f'Unexpected error: {err}',
+        }
+
+
+@mcp.tool
+def create_squash_deformer(
+    object_name: str,
+    factor: float = 0.0,
+    low_bound: float = -1.0,
+    high_bound: float = 1.0,
+    name: str | None = None
+) -> dict[str, Any]:
+    """Create a squash (non-linear) deformer.
+    
+    Args:
+        object_name: Name of the object to deform.
+        factor: Squash factor value.
+        low_bound: Low bound value.
+        high_bound: High bound value.
+        name: Optional name for the deformer.
+    
+    Returns:
+        Dictionary with 'status', 'deformer' (deformer handle), and 'message'.
+    """
+    try:
+        import maya.cmds as cmds
+    except ImportError:
+        return {
+            'status': 'error',
+            'message': 'Maya is not available',
+        }
+    
+    try:
+        if not cmds.objExists(object_name):
+            return {
+                'status': 'error',
+                'message': f'Object "{object_name}" does not exist',
+            }
+        
+        kwargs = {
+            'factor': factor,
+            'lowBound': low_bound,
+            'highBound': high_bound,
+        }
+        if name:
+            kwargs['name'] = name
+        
+        result = cmds.nonLinear(object_name, type='squash', **kwargs)
+        deformer = result[0] if result else None
+        
+        return {
+            'status': 'success',
+            'message': f'Created squash deformer for {object_name}',
+            'deformer': deformer,
+        }
+    except RuntimeError as err:
+        return {
+            'status': 'error',
+            'message': f'Maya error: {err}',
+        }
+    except Exception as err:
+        return {
+            'status': 'error',
+            'message': f'Unexpected error: {err}',
+        }
+
+
+@mcp.tool
+def list_deformers(object_name: str) -> dict[str, Any]:
+    """List all deformers on an object.
+    
+    Args:
+        object_name: Name of the object.
+    
+    Returns:
+        Dictionary with 'status', 'deformers' (list), and 'message'.
+    """
+    try:
+        import maya.cmds as cmds
+    except ImportError:
+        return {
+            'status': 'error',
+            'message': 'Maya is not available',
+            'deformers': [],
+        }
+    
+    try:
+        if not cmds.objExists(object_name):
+            return {
+                'status': 'error',
+                'message': f'Object "{object_name}" does not exist',
+                'deformers': [],
+            }
+        
+        history = cmds.listHistory(object_name)
+        deformer_types = [
+            'blendShape', 'cluster', 'ffd', 'nonLinear', 'wire', 'sculpt',
+            'jiggle', 'softMod', 'tension', 'deltaMush', 'shrinkWrap', 'wrap'
+        ]
+        
+        deformers = []
+        for node in history or []:
+            node_type = cmds.nodeType(node)
+            if node_type in deformer_types:
+                deformers.append(node)
+        
+        return {
+            'status': 'success',
+            'message': f'Found {len(deformers)} deformer(s) on {object_name}',
+            'deformers': deformers,
+            'count': len(deformers),
+        }
+    except RuntimeError as err:
+        return {
+            'status': 'error',
+            'message': f'Maya error: {err}',
+            'deformers': [],
+        }
+    except Exception as err:
+        return {
+            'status': 'error',
+            'message': f'Unexpected error: {err}',
+            'deformers': [],
+        }
+
+
 __all__ = [
     'create_blend_shape',
     'create_cluster',
     'create_lattice',
     'create_bend_deformer',
     'create_twist_deformer',
+    'create_sine_deformer',
+    'create_squash_deformer',
+    'list_deformers',
 ]

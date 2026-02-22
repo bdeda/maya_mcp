@@ -556,6 +556,242 @@ def merge_vertices(
         }
 
 
+@mcp.tool
+def split_faces(
+    mesh_name: str,
+    faces: list[int] | None = None
+) -> dict[str, Any]:
+    """Split faces on a polygon mesh.
+    
+    Args:
+        mesh_name: Name of the mesh transform or shape.
+        faces: Optional list of face indices to split. If None, split selected faces.
+    
+    Returns:
+        Dictionary with 'status' and 'message'.
+    """
+    try:
+        import maya.cmds as cmds
+    except ImportError:
+        return {
+            'status': 'error',
+            'message': 'Maya is not available',
+        }
+    
+    try:
+        if not cmds.objExists(mesh_name):
+            return {
+                'status': 'error',
+                'message': f'Mesh "{mesh_name}" does not exist',
+            }
+        
+        shape = mesh_name
+        if cmds.objectType(mesh_name) == 'transform':
+            shapes = cmds.listRelatives(mesh_name, shapes=True, type='mesh')
+            if not shapes:
+                return {
+                    'status': 'error',
+                    'message': f'No mesh shape found for "{mesh_name}"',
+                }
+            shape = shapes[0]
+        
+        if faces:
+            face_selection = [f'{shape}.f[{i}]' for i in faces]
+            cmds.select(face_selection, replace=True)
+        
+        cmds.polySplit(shape)
+        
+        return {
+            'status': 'success',
+            'message': f'Split faces on {mesh_name}',
+            'mesh': mesh_name,
+        }
+    except RuntimeError as err:
+        return {
+            'status': 'error',
+            'message': f'Maya error: {err}',
+        }
+    except Exception as err:
+        return {
+            'status': 'error',
+            'message': f'Unexpected error: {err}',
+        }
+
+
+@mcp.tool
+def collapse_edges(
+    mesh_name: str,
+    edges: list[int] | None = None
+) -> dict[str, Any]:
+    """Collapse edges on a polygon mesh.
+    
+    Args:
+        mesh_name: Name of the mesh transform or shape.
+        edges: Optional list of edge indices to collapse. If None, collapse selected edges.
+    
+    Returns:
+        Dictionary with 'status' and 'message'.
+    """
+    try:
+        import maya.cmds as cmds
+    except ImportError:
+        return {
+            'status': 'error',
+            'message': 'Maya is not available',
+        }
+    
+    try:
+        if not cmds.objExists(mesh_name):
+            return {
+                'status': 'error',
+                'message': f'Mesh "{mesh_name}" does not exist',
+            }
+        
+        shape = mesh_name
+        if cmds.objectType(mesh_name) == 'transform':
+            shapes = cmds.listRelatives(mesh_name, shapes=True, type='mesh')
+            if not shapes:
+                return {
+                    'status': 'error',
+                    'message': f'No mesh shape found for "{mesh_name}"',
+                }
+            shape = shapes[0]
+        
+        if edges:
+            edge_selection = [f'{shape}.e[{i}]' for i in edges]
+            cmds.select(edge_selection, replace=True)
+        
+        cmds.polyCollapseEdge(shape)
+        
+        return {
+            'status': 'success',
+            'message': f'Collapsed edges on {mesh_name}',
+            'mesh': mesh_name,
+        }
+    except RuntimeError as err:
+        return {
+            'status': 'error',
+            'message': f'Maya error: {err}',
+        }
+    except Exception as err:
+        return {
+            'status': 'error',
+            'message': f'Unexpected error: {err}',
+        }
+
+
+@mcp.tool
+def triangulate_mesh(
+    mesh_name: str
+) -> dict[str, Any]:
+    """Triangulate a polygon mesh.
+    
+    Args:
+        mesh_name: Name of the mesh transform or shape.
+    
+    Returns:
+        Dictionary with 'status' and 'message'.
+    """
+    try:
+        import maya.cmds as cmds
+    except ImportError:
+        return {
+            'status': 'error',
+            'message': 'Maya is not available',
+        }
+    
+    try:
+        if not cmds.objExists(mesh_name):
+            return {
+                'status': 'error',
+                'message': f'Mesh "{mesh_name}" does not exist',
+            }
+        
+        shape = mesh_name
+        if cmds.objectType(mesh_name) == 'transform':
+            shapes = cmds.listRelatives(mesh_name, shapes=True, type='mesh')
+            if not shapes:
+                return {
+                    'status': 'error',
+                    'message': f'No mesh shape found for "{mesh_name}"',
+                }
+            shape = shapes[0]
+        
+        cmds.polyTriangulate(shape)
+        
+        return {
+            'status': 'success',
+            'message': f'Triangulated mesh {mesh_name}',
+            'mesh': mesh_name,
+        }
+    except RuntimeError as err:
+        return {
+            'status': 'error',
+            'message': f'Maya error: {err}',
+        }
+    except Exception as err:
+        return {
+            'status': 'error',
+            'message': f'Unexpected error: {err}',
+        }
+
+
+@mcp.tool
+def separate_mesh(
+    mesh_name: str
+) -> dict[str, Any]:
+    """Separate a polygon mesh into separate objects.
+    
+    Args:
+        mesh_name: Name of the mesh transform or shape.
+    
+    Returns:
+        Dictionary with 'status', 'separated_meshes', and 'message'.
+    """
+    try:
+        import maya.cmds as cmds
+    except ImportError:
+        return {
+            'status': 'error',
+            'message': 'Maya is not available',
+        }
+    
+    try:
+        if not cmds.objExists(mesh_name):
+            return {
+                'status': 'error',
+                'message': f'Mesh "{mesh_name}" does not exist',
+            }
+        
+        shape = mesh_name
+        if cmds.objectType(mesh_name) == 'transform':
+            shapes = cmds.listRelatives(mesh_name, shapes=True, type='mesh')
+            if not shapes:
+                return {
+                    'status': 'error',
+                    'message': f'No mesh shape found for "{mesh_name}"',
+                }
+            shape = shapes[0]
+        
+        result = cmds.polySeparate(shape)
+        
+        return {
+            'status': 'success',
+            'message': f'Separated mesh {mesh_name}',
+            'separated_meshes': result if isinstance(result, list) else [result],
+        }
+    except RuntimeError as err:
+        return {
+            'status': 'error',
+            'message': f'Maya error: {err}',
+        }
+    except Exception as err:
+        return {
+            'status': 'error',
+            'message': f'Unexpected error: {err}',
+        }
+
+
 __all__ = [
     'extrude_faces',
     'extrude_edges',
@@ -565,4 +801,8 @@ __all__ = [
     'boolean_difference',
     'boolean_intersection',
     'merge_vertices',
+    'split_faces',
+    'collapse_edges',
+    'triangulate_mesh',
+    'separate_mesh',
 ]

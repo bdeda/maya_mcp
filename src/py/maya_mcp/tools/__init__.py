@@ -16,6 +16,7 @@ from maya_mcp.tools import mesh  # noqa: F401
 from maya_mcp.tools import mesh_editing  # noqa: F401
 from maya_mcp.tools import nurbs  # noqa: F401
 from maya_mcp.tools import objects  # noqa: F401
+from maya_mcp.tools import paint  # noqa: F401
 from maya_mcp.tools import query  # noqa: F401
 from maya_mcp.tools import rendering  # noqa: F401
 from maya_mcp.tools import rigging  # noqa: F401
