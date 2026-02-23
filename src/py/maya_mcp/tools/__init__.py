@@ -24,6 +24,7 @@ from maya_mcp.tools import scene  # noqa: F401
 from maya_mcp.tools import sets  # noqa: F401
 from maya_mcp.tools import skinning  # noqa: F401
 from maya_mcp.tools import transform  # noqa: F401
+from maya_mcp.tools import usd  # noqa: F401
 from maya_mcp.tools import uv  # noqa: F401
 
 __all__: list[str] = []
