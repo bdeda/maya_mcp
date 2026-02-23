@@ -32,16 +32,30 @@ def _fix_maya_stdio_early() -> None:
                 try:
                     fd = stream.fileno()
                     # Create proper binary buffer from file descriptor
+                    # Use closefd=False to prevent closing the original file descriptor
                     if is_input:
-                        binary_buffer = io.FileIO(fd, 'rb')
+                        binary_buffer = io.FileIO(fd, 'rb', closefd=False)
                     else:
-                        binary_buffer = io.FileIO(fd, 'wb')
+                        binary_buffer = io.FileIO(fd, 'wb', closefd=False)
                     # Create TextIOWrapper that wraps the binary buffer
+                    # Don't let TextIOWrapper close the underlying buffer
                     text_wrapper = io.TextIOWrapper(
                         binary_buffer,
                         encoding='utf-8',
-                        line_buffering=not is_input  # Line buffering for output streams
+                        line_buffering=not is_input,  # Line buffering for output streams
+                        write_through=not is_input  # Write through for output streams
                     )
+                    # Prevent the TextIOWrapper from closing the underlying buffer
+                    # by overriding close to only flush, not close
+                    original_close = text_wrapper.close
+                    def safe_close():
+                        """Close that flushes but doesn't close underlying file."""
+                        try:
+                            text_wrapper.flush()
+                        except (OSError, ValueError):
+                            pass
+                        # Don't call original_close() to prevent closing the FD
+                    text_wrapper.close = safe_close
                     return text_wrapper
                 except (OSError, AttributeError, ValueError):
                     # File descriptor approach failed, fall through to wrapper approach
@@ -134,14 +148,18 @@ def _fix_maya_stdio_early() -> None:
                     self._stream.flush()
             
             def close(self) -> None:
-                """Close the stream."""
+                """Close the stream (but don't actually close stdio streams)."""
+                # Don't actually close stdio streams - just mark as closed for compatibility
+                # but keep the underlying stream open
                 if not self._closed:
                     self._closed = True
-                    if hasattr(self._stream, 'close'):
-                        try:
-                            self._stream.close()
-                        except (OSError, AttributeError):
-                            pass
+                    # Flush instead of closing for stdio streams
+                    try:
+                        if hasattr(self._stream, 'flush'):
+                            self._stream.flush()
+                    except (OSError, AttributeError, ValueError):
+                        pass
+                    # Don't call close() on the underlying stream for stdio
             
             def __enter__(self):
                 """Context manager entry."""
