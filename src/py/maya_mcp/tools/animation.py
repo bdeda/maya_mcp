@@ -1082,6 +1082,299 @@ def create_time_warp(
         }
 
 
+@mcp.tool
+def create_animation_curve(
+    curve_type: str = 'animCurveTL',
+    name: str | None = None
+) -> dict[str, Any]:
+    """Create an animation curve node.
+    
+    Args:
+        curve_type: Type of animation curve: 'animCurveTA' (time-angle), 'animCurveTL' (time-length),
+                    'animCurveTU' (time-unitless), 'animCurveUA' (unitless-angle), 'animCurveUL' (unitless-length),
+                    'animCurveUU' (unitless-unitless). Default is 'animCurveTL'.
+        name: Optional name for the animation curve.
+    
+    Returns:
+        Dictionary with 'status', 'curve' (curve node name), and 'message'.
+    """
+    try:
+        import maya.cmds as cmds
+    except ImportError:
+        return {
+            'status': 'error',
+            'message': 'Maya is not available',
+        }
+    
+    valid_types = ['animCurveTA', 'animCurveTL', 'animCurveTU', 'animCurveUA', 'animCurveUL', 'animCurveUU']
+    if curve_type not in valid_types:
+        return {
+            'status': 'error',
+            'message': f'Invalid curve type. Must be one of: {", ".join(valid_types)}',
+        }
+    
+    try:
+        kwargs = {}
+        if name:
+            kwargs['name'] = name
+        
+        curve = cmds.createNode(curve_type, **kwargs)
+        
+        return {
+            'status': 'success',
+            'message': f'Created animation curve: {curve}',
+            'curve': curve,
+            'curve_type': curve_type,
+        }
+    except RuntimeError as err:
+        return {
+            'status': 'error',
+            'message': f'Maya error: {err}',
+        }
+    except Exception as err:
+        return {
+            'status': 'error',
+            'message': f'Unexpected error: {err}',
+        }
+
+
+@mcp.tool
+def add_curve_keyframe(
+    curve_name: str,
+    time: float,
+    value: float,
+    tangent_in_type: str | None = None,
+    tangent_out_type: str | None = None
+) -> dict[str, Any]:
+    """Add a keyframe to an animation curve.
+    
+    Args:
+        curve_name: Name of the animation curve.
+        time: Time value for the keyframe.
+        value: Value for the keyframe.
+        tangent_in_type: Optional in tangent type (e.g., 'auto', 'spline', 'linear', 'flat', 'step').
+        tangent_out_type: Optional out tangent type (same options as in_tangent_type).
+    
+    Returns:
+        Dictionary with 'status', 'keyframe_index', and 'message'.
+    """
+    try:
+        import maya.cmds as cmds
+    except ImportError:
+        return {
+            'status': 'error',
+            'message': 'Maya is not available',
+        }
+    
+    try:
+        if not cmds.objExists(curve_name):
+            return {
+                'status': 'error',
+                'message': f'Animation curve "{curve_name}" does not exist',
+            }
+        
+        # Add keyframe using setKeyframe on the curve's output attribute
+        output_attr = f'{curve_name}.output'
+        kwargs = {
+            'time': time,
+            'value': value,
+        }
+        
+        result = cmds.setKeyframe(output_attr, **kwargs)
+        
+        # Set tangent types if provided
+        if tangent_in_type or tangent_out_type:
+            tangent_kwargs = {}
+            if tangent_in_type:
+                tangent_kwargs['inTangentType'] = tangent_in_type
+            if tangent_out_type:
+                tangent_kwargs['outTangentType'] = tangent_out_type
+            cmds.keyTangent(output_attr, time=(time, time), **tangent_kwargs)
+        
+        return {
+            'status': 'success',
+            'message': f'Added keyframe at time {time}',
+            'keyframe_index': result,
+            'curve': curve_name,
+            'time': time,
+            'value': value,
+        }
+    except RuntimeError as err:
+        return {
+            'status': 'error',
+            'message': f'Maya error: {err}',
+        }
+    except Exception as err:
+        return {
+            'status': 'error',
+            'message': f'Unexpected error: {err}',
+        }
+
+
+@mcp.tool
+def query_animation_curve(
+    curve_name: str,
+    query_type: str = 'keyframeCount'
+) -> dict[str, Any]:
+    """Query information about an animation curve.
+    
+    Args:
+        curve_name: Name of the animation curve.
+        query_type: Type of information to query: 'keyframeCount', 'minTime', 'maxTime', 'minValue', 'maxValue',
+                    'preInfinity', 'postInfinity', 'weightedTangents', 'isWeighted'.
+    
+    Returns:
+        Dictionary with 'status', 'result', and 'message'.
+    """
+    try:
+        import maya.cmds as cmds
+    except ImportError:
+        return {
+            'status': 'error',
+            'message': 'Maya is not available',
+            'result': None,
+        }
+    
+    try:
+        if not cmds.objExists(curve_name):
+            return {
+                'status': 'error',
+                'message': f'Animation curve "{curve_name}" does not exist',
+                'result': None,
+            }
+        
+        valid_queries = [
+            'keyframeCount', 'minTime', 'maxTime', 'minValue', 'maxValue',
+            'preInfinity', 'postInfinity', 'weightedTangents', 'isWeighted'
+        ]
+        if query_type not in valid_queries:
+            return {
+                'status': 'error',
+                'message': f'Invalid query type. Must be one of: {", ".join(valid_queries)}',
+                'result': None,
+            }
+        
+        kwargs = {'query': True}
+        
+        if query_type == 'keyframeCount':
+            result = cmds.keyframe(curve_name, query=True, keyframeCount=True) or 0
+        elif query_type == 'minTime':
+            result = cmds.keyframe(curve_name, query=True, timeChange=True)
+            result = min(result) if result else None
+        elif query_type == 'maxTime':
+            result = cmds.keyframe(curve_name, query=True, timeChange=True)
+            result = max(result) if result else None
+        elif query_type == 'minValue':
+            result = cmds.keyframe(curve_name, query=True, valueChange=True)
+            result = min(result) if result else None
+        elif query_type == 'maxValue':
+            result = cmds.keyframe(curve_name, query=True, valueChange=True)
+            result = max(result) if result else None
+        elif query_type == 'preInfinity':
+            result = cmds.getAttr(f'{curve_name}.preInfinity')
+        elif query_type == 'postInfinity':
+            result = cmds.getAttr(f'{curve_name}.postInfinity')
+        elif query_type == 'weightedTangents':
+            result = cmds.getAttr(f'{curve_name}.weightedTangents')
+        elif query_type == 'isWeighted':
+            result = cmds.getAttr(f'{curve_name}.isWeighted')
+        
+        return {
+            'status': 'success',
+            'message': f'Queried {query_type} for {curve_name}',
+            'result': result,
+            'curve': curve_name,
+            'query_type': query_type,
+        }
+    except RuntimeError as err:
+        return {
+            'status': 'error',
+            'message': f'Maya error: {err}',
+            'result': None,
+        }
+    except Exception as err:
+        return {
+            'status': 'error',
+            'message': f'Unexpected error: {err}',
+            'result': None,
+        }
+
+
+@mcp.tool
+def set_animation_curve_infinity(
+    curve_name: str,
+    pre_infinity: str | None = None,
+    post_infinity: str | None = None
+) -> dict[str, Any]:
+    """Set infinity behavior for an animation curve.
+    
+    Args:
+        curve_name: Name of the animation curve.
+        pre_infinity: Pre-infinity type: 'constant', 'linear', 'cycle', 'cycleRelative', 'oscillate'.
+        post_infinity: Post-infinity type: same options as pre_infinity.
+    
+    Returns:
+        Dictionary with 'status' and 'message'.
+    """
+    try:
+        import maya.cmds as cmds
+    except ImportError:
+        return {
+            'status': 'error',
+            'message': 'Maya is not available',
+        }
+    
+    try:
+        if not cmds.objExists(curve_name):
+            return {
+                'status': 'error',
+                'message': f'Animation curve "{curve_name}" does not exist',
+            }
+        
+        valid_infinity_types = ['constant', 'linear', 'cycle', 'cycleRelative', 'oscillate']
+        
+        if pre_infinity and pre_infinity not in valid_infinity_types:
+            return {
+                'status': 'error',
+                'message': f'Invalid pre_infinity type. Must be one of: {", ".join(valid_infinity_types)}',
+            }
+        
+        if post_infinity and post_infinity not in valid_infinity_types:
+            return {
+                'status': 'error',
+                'message': f'Invalid post_infinity type. Must be one of: {", ".join(valid_infinity_types)}',
+            }
+        
+        if not (pre_infinity or post_infinity):
+            return {
+                'status': 'error',
+                'message': 'Must specify at least one infinity type',
+            }
+        
+        if pre_infinity:
+            cmds.setAttr(f'{curve_name}.preInfinity', pre_infinity)
+        if post_infinity:
+            cmds.setAttr(f'{curve_name}.postInfinity', post_infinity)
+        
+        return {
+            'status': 'success',
+            'message': f'Set infinity behavior for {curve_name}',
+            'curve': curve_name,
+            'pre_infinity': pre_infinity,
+            'post_infinity': post_infinity,
+        }
+    except RuntimeError as err:
+        return {
+            'status': 'error',
+            'message': f'Maya error: {err}',
+        }
+    except Exception as err:
+        return {
+            'status': 'error',
+            'message': f'Unexpected error: {err}',
+        }
+
+
 __all__ = [
     'set_keyframe',
     'get_keyframe_times',
@@ -1102,4 +1395,8 @@ __all__ = [
     'create_character_set',
     'create_animation_clip',
     'create_time_warp',
+    'create_animation_curve',
+    'add_curve_keyframe',
+    'query_animation_curve',
+    'set_animation_curve_infinity',
 ]
