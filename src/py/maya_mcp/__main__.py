@@ -12,6 +12,7 @@ if __name__ == "__main__":
     if str(package_dir) not in sys.path:
         sys.path.insert(0, str(package_dir))
 
+# Import mcp - the stdio fix is already applied in __init__.py
 from maya_mcp import mcp
 
 
@@ -24,6 +25,9 @@ def main() -> None:
     - As a script: maya-mcp (if installed)
     """
     try:
+        # Fix stdio handling for Maya's Python environment
+        _fix_maya_stdio()
+        
         # Check if Maya is available
         try:
             import maya.cmds as cmds
@@ -44,6 +48,8 @@ def main() -> None:
         sys.exit(0)
     except Exception as err:
         print(f"Maya MCP Server: Error - {err}", file=sys.stderr)
+        import traceback
+        traceback.print_exc()
         sys.exit(1)
 
 
