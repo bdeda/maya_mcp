@@ -247,9 +247,198 @@ def remove_constraint(constraint_name: str) -> dict[str, Any]:
         }
 
 
+@mcp.tool
+def create_normal_constraint(
+    target: str,
+    constrained: str,
+    maintain_offset: bool = True,
+    name: str | None = None
+) -> dict[str, Any]:
+    """Create a normal constraint.
+    
+    Args:
+        target: Target object name (surface/mesh).
+        constrained: Constrained object name.
+        maintain_offset: If True, maintain offset between objects.
+        name: Optional name for the constraint.
+    
+    Returns:
+        Dictionary with 'status', 'constraint', and 'message'.
+    """
+    try:
+        import maya.cmds as cmds
+    except ImportError:
+        return {
+            'status': 'error',
+            'message': 'Maya is not available',
+        }
+    
+    try:
+        if not cmds.objExists(target):
+            return {
+                'status': 'error',
+                'message': f'Target "{target}" does not exist',
+            }
+        
+        if not cmds.objExists(constrained):
+            return {
+                'status': 'error',
+                'message': f'Constrained object "{constrained}" does not exist',
+            }
+        
+        kwargs = {'target': target, 'maintainOffset': maintain_offset}
+        if name:
+            kwargs['name'] = name
+        
+        constraint = cmds.normalConstraint(constrained, **kwargs)
+        
+        return {
+            'status': 'success',
+            'message': f'Created normal constraint: {constraint[0] if constraint else None}',
+            'constraint': constraint[0] if constraint else None,
+        }
+    except RuntimeError as err:
+        return {
+            'status': 'error',
+            'message': f'Maya error: {err}',
+        }
+    except Exception as err:
+        return {
+            'status': 'error',
+            'message': f'Unexpected error: {err}',
+        }
+
+
+@mcp.tool
+def create_tangent_constraint(
+    target: str,
+    constrained: str,
+    maintain_offset: bool = True,
+    name: str | None = None
+) -> dict[str, Any]:
+    """Create a tangent constraint.
+    
+    Args:
+        target: Target object name (curve/surface).
+        constrained: Constrained object name.
+        maintain_offset: If True, maintain offset between objects.
+        name: Optional name for the constraint.
+    
+    Returns:
+        Dictionary with 'status', 'constraint', and 'message'.
+    """
+    try:
+        import maya.cmds as cmds
+    except ImportError:
+        return {
+            'status': 'error',
+            'message': 'Maya is not available',
+        }
+    
+    try:
+        if not cmds.objExists(target):
+            return {
+                'status': 'error',
+                'message': f'Target "{target}" does not exist',
+            }
+        
+        if not cmds.objExists(constrained):
+            return {
+                'status': 'error',
+                'message': f'Constrained object "{constrained}" does not exist',
+            }
+        
+        kwargs = {'target': target, 'maintainOffset': maintain_offset}
+        if name:
+            kwargs['name'] = name
+        
+        constraint = cmds.tangentConstraint(constrained, **kwargs)
+        
+        return {
+            'status': 'success',
+            'message': f'Created tangent constraint: {constraint[0] if constraint else None}',
+            'constraint': constraint[0] if constraint else None,
+        }
+    except RuntimeError as err:
+        return {
+            'status': 'error',
+            'message': f'Maya error: {err}',
+        }
+    except Exception as err:
+        return {
+            'status': 'error',
+            'message': f'Unexpected error: {err}',
+        }
+
+
+@mcp.tool
+def create_pole_vector_constraint(
+    target: str,
+    constrained: str,
+    maintain_offset: bool = True,
+    name: str | None = None
+) -> dict[str, Any]:
+    """Create a pole vector constraint (for IK handles).
+    
+    Args:
+        target: Target object name.
+        constrained: Constrained IK handle name.
+        maintain_offset: If True, maintain offset between objects.
+        name: Optional name for the constraint.
+    
+    Returns:
+        Dictionary with 'status', 'constraint', and 'message'.
+    """
+    try:
+        import maya.cmds as cmds
+    except ImportError:
+        return {
+            'status': 'error',
+            'message': 'Maya is not available',
+        }
+    
+    try:
+        if not cmds.objExists(target):
+            return {
+                'status': 'error',
+                'message': f'Target "{target}" does not exist',
+            }
+        
+        if not cmds.objExists(constrained):
+            return {
+                'status': 'error',
+                'message': f'Constrained IK handle "{constrained}" does not exist',
+            }
+        
+        kwargs = {'target': target, 'maintainOffset': maintain_offset}
+        if name:
+            kwargs['name'] = name
+        
+        constraint = cmds.poleVectorConstraint(constrained, **kwargs)
+        
+        return {
+            'status': 'success',
+            'message': f'Created pole vector constraint: {constraint[0] if constraint else None}',
+            'constraint': constraint[0] if constraint else None,
+        }
+    except RuntimeError as err:
+        return {
+            'status': 'error',
+            'message': f'Maya error: {err}',
+        }
+    except Exception as err:
+        return {
+            'status': 'error',
+            'message': f'Unexpected error: {err}',
+        }
+
+
 __all__ = [
     'create_aim_constraint',
     'create_scale_constraint',
     'create_geometry_constraint',
+    'create_normal_constraint',
+    'create_tangent_constraint',
+    'create_pole_vector_constraint',
     'remove_constraint',
 ]

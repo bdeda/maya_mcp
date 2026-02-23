@@ -2,49 +2,56 @@
 
 This document outlines Maya.cmds API functionality that is **not currently covered** by the Maya MCP server. This serves as a roadmap for future enhancements.
 
-## Currently Covered (80+ tools)
+## Currently Covered (140+ tools)
 
 ✅ **Basic Operations**: Selection, queries, object creation, deletion, duplication  
 ✅ **Polygon Primitives**: Cube, sphere, plane, cylinder  
 ✅ **Transforms**: Move, rotate, scale, parent  
 ✅ **Attributes**: Get/set, add, connect/disconnect  
 ✅ **Basic Mesh Operations**: Vertex/face/edge queries, combine  
+✅ **Mesh Editing**: Extrude faces/edges, bevel, smooth, boolean operations (union/difference/intersection), merge vertices, split faces, collapse edges, triangulate, separate mesh, polygon normals, quadrangulate, reduce, remesh, flip UVs, normalize UVs, planar projection, UV projection, smooth faces, soften edges, transfer attributes  
 ✅ **Rigging**: Joints, IK handles, basic constraints (parent, point, orient)  
 ✅ **Skinning**: Bind skin, get skin cluster info  
-✅ **Animation**: Keyframes, time control, animation layers  
+✅ **Paint Tools**: Get/set skin weights  
+✅ **Animation**: Keyframes, time control, animation layers, bake results, bake simulation, copy/paste keyframes, scale/snap/select keyframes, query keyframe info  
 ✅ **Display Layers**: Create, manage, visibility  
 ✅ **Lights**: Directional, point, spot, area  
 ✅ **UV Editing**: Get/set UVs, layout, snapshots  
-✅ **Materials**: Lambert, Phong, Blinn creation and assignment  
+✅ **Materials**: Lambert, Phong, Blinn, surface shader, use background, layered shader, ramp shader, generic shading node creation, file texture, ramp texture, place2dTexture  
 ✅ **Rendering**: Playblast, software rendering  
 ✅ **File Operations**: Open, save, import, export  
+✅ **Cameras**: Create cameras (perspective/orthographic), set focal length, look through camera, list cameras, view fit, view selected  
+✅ **NURBS**: Circle, sphere, cylinder primitives, curves from points, loft, revolve, attach curves, close curve, planar surface  
+✅ **Constraints**: Aim, scale, geometry, normal, tangent, pole vector constraints, remove constraints  
+✅ **Deformers**: Blend shape, cluster, lattice, non-linear (bend, twist, sine, squash), sculpt, wire, wrinkle, jiggle, softMod, tension, deltaMush, shrinkWrap, wrap, list deformers  
+✅ **Sets and Partitions**: Create sets/partitions, add/remove from sets, list sets, get set members  
 
 ## Missing Functionality by Category
 
 ### 1. Polygon Mesh Operations (Extensive)
 
 **Missing polygon modeling commands:**
-- `polyExtrudeFace` - Extrude faces
-- `polyExtrudeEdge` - Extrude edges
+- ✅ `polyExtrudeFace` - Extrude faces (IMPLEMENTED)
+- ✅ `polyExtrudeEdge` - Extrude edges (IMPLEMENTED)
 - `polyExtrudeVertex` - Extrude vertices
-- `polyBevel` - Bevel edges/faces
+- ✅ `polyBevel` - Bevel edges/faces (IMPLEMENTED)
 - `polyBridgeEdge` - Bridge edges between meshes
 - `polyChamferVertex` - Chamfer vertices
-- `polyCollapseEdge` - Collapse edges
+- ✅ `polyCollapseEdge` - Collapse edges (IMPLEMENTED)
 - `polyCollapseFace` - Collapse faces
 - `polyCut` - Cut faces
 - `polyMergeEdge` - Merge edges
-- `polyMergeVertex` - Merge vertices
-- `polyNormal` - Normal operations
-- `polySmooth` - Smooth mesh
+- ✅ `polyMergeVertex` - Merge vertices (IMPLEMENTED)
+- ✅ `polyNormal` - Normal operations (IMPLEMENTED)
+- ✅ `polySmooth` - Smooth mesh (IMPLEMENTED)
 - `polySubdivideFace` - Subdivide faces
-- `polyTriangulate` - Triangulate mesh
-- `polyQuadrangulate` - Convert to quads
-- `polyReduce` - Reduce polygon count
-- `polyRemesh` - Remesh operations
+- ✅ `polyTriangulate` - Triangulate mesh (IMPLEMENTED)
+- ✅ `polyQuadrangulate` - Convert to quads (IMPLEMENTED)
+- ✅ `polyReduce` - Reduce polygon count (IMPLEMENTED)
+- ✅ `polyRemesh` - Remesh operations (IMPLEMENTED)
 - `polyCrease` - Crease edges/vertices
 - `polySewEdge` - Sew edges together
-- `polySplit` - Split faces
+- ✅ `polySplit` - Split faces (IMPLEMENTED)
 - `polySubdEdge` - Subdivide edges
 - `polySubdFace` - Subdivide faces
 - `polyAppend` - Append to mesh
@@ -55,20 +62,21 @@ This document outlines Maya.cmds API functionality that is **not currently cover
 - `polyDelVertex` - Delete vertices
 - `polyDuplicateEdge` - Duplicate edges
 - `polyFlipEdge` - Flip edges
-- `polyFlipUV` - Flip UVs
+- ✅ `polyFlipUV` - Flip UVs (IMPLEMENTED)
 - `polyMoveEdge` - Move edges
 - `polyMoveFace` - Move faces
 - `polyMoveVertex` - Move vertices
-- `polyNormalizeUV` - Normalize UVs
-- `polyPlanarProjection` - Planar UV projection
-- `polyProjection` - Various UV projections
-- `polySeparate` - Separate mesh components
-- `polySmoothFace` - Smooth specific faces
-- `polySoftEdge` - Soften edges
+- ✅ `polyNormalizeUV` - Normalize UVs (IMPLEMENTED)
+- ✅ `polyPlanarProjection` - Planar UV projection (IMPLEMENTED)
+- ✅ `polyProjection` - Various UV projections (IMPLEMENTED)
+- ✅ `polySeparate` - Separate mesh components (IMPLEMENTED)
+- ✅ `polySmoothFace` - Smooth specific faces (IMPLEMENTED)
+- ✅ `polySoftEdge` - Soften edges (IMPLEMENTED)
 - `polySplitVertex` - Split vertices
 - `polySubdivideEdge` - Subdivide edges
-- `polyTransfer` - Transfer attributes between meshes
-- `polyUnite` - Already covered (combine_meshes)
+- ✅ `polyTransfer` - Transfer attributes between meshes (IMPLEMENTED)
+- ✅ `polyUnite` - Boolean union (IMPLEMENTED via boolean_union)
+- ✅ Boolean difference/intersection (IMPLEMENTED)
 - `polyWedgeFace` - Wedge faces
 
 **Missing polygon component operations:**
@@ -76,26 +84,26 @@ This document outlines Maya.cmds API functionality that is **not currently cover
 - Component editing operations
 - Component queries
 
-### 2. NURBS Operations (Not Covered)
+### 2. NURBS Operations (Partially Covered)
 
 **NURBS primitives:**
-- `nurbsCircle` - Create NURBS circle
+- ✅ `nurbsCircle` - Create NURBS circle (IMPLEMENTED)
 - `nurbsSquare` - Create NURBS square
 - `nurbsPlane` - Create NURBS plane
-- `nurbsSphere` - Create NURBS sphere
+- ✅ `nurbsSphere` - Create NURBS sphere (IMPLEMENTED)
 - `nurbsCube` - Create NURBS cube
-- `nurbsCylinder` - Create NURBS cylinder
+- ✅ `nurbsCylinder` - Create NURBS cylinder (IMPLEMENTED)
 - `nurbsCone` - Create NURBS cone
 - `nurbsTorus` - Create NURBS torus
 
 **NURBS curve operations:**
-- `curve` - Create curve from points
+- ✅ `curve` - Create curve from points (IMPLEMENTED)
 - `curveOnSurface` - Create curve on surface
 - `duplicateCurve` - Duplicate curve
-- `attachCurve` - Attach curves
+- ✅ `attachCurve` - Attach curves (IMPLEMENTED)
 - `detachCurve` - Detach curve
 - `openCurve` - Open curve
-- `closeCurve` - Close curve
+- ✅ `closeCurve` - Close curve (IMPLEMENTED)
 - `rebuildCurve` - Rebuild curve
 - `reverseCurve` - Reverse curve direction
 - `insertKnot` - Insert knot
@@ -105,15 +113,14 @@ This document outlines Maya.cmds API functionality that is **not currently cover
 - `intersectCurve` - Find curve intersections
 
 **NURBS surface operations:**
-- `loft` - Loft surfaces
-- `revolve` - Revolve curve to surface
-- `planar` - Create planar surface
+- ✅ `loft` - Loft surfaces (IMPLEMENTED)
+- ✅ `revolve` - Revolve curve to surface (IMPLEMENTED)
+- ✅ `planar` - Create planar surface (IMPLEMENTED)
 - `boundary` - Create boundary surface
 - `square` - Create square surface
 - `bevel` - Bevel surface
 - `extrude` - Extrude curve to surface
 - `birailSrf` - Birail surface
-- `boundary` - Boundary surface
 - `duplicateSurface` - Duplicate surface
 - `attachSurface` - Attach surfaces
 - `detachSurface` - Detach surface
@@ -134,25 +141,26 @@ This document outlines Maya.cmds API functionality that is **not currently cover
 - Isoparm operations
 - Surface patch operations
 
-### 3. Deformers (Not Covered)
+### 3. Deformers (Partially Covered)
 
 **Basic deformers:**
-- `blendShape` - Blend shape deformer
-- `cluster` - Cluster deformer
-- `lattice` - Lattice deformer
-- `sculpt` - Sculpt deformer
-- `wire` - Wire deformer
-- `wrinkle` - Wrinkle deformer
-- `jiggle` - Jiggle deformer
-- `softMod` - Soft modification
-- `tension` - Tension deformer
-- `deltaMush` - Delta mush deformer
-- `shrinkWrap` - Shrink wrap deformer
-- `wrap` - Wrap deformer
-- `nonLinear` - Non-linear deformers (bend, flare, sine, squash, twist, wave)
+- ✅ `blendShape` - Blend shape deformer (IMPLEMENTED)
+- ✅ `cluster` - Cluster deformer (IMPLEMENTED)
+- ✅ `lattice` - Lattice deformer (IMPLEMENTED)
+- ✅ `sculpt` - Sculpt deformer (IMPLEMENTED)
+- ✅ `wire` - Wire deformer (IMPLEMENTED)
+- ✅ `wrinkle` - Wrinkle deformer (IMPLEMENTED)
+- ✅ `jiggle` - Jiggle deformer (IMPLEMENTED)
+- ✅ `softMod` - Soft modification (IMPLEMENTED)
+- ✅ `tension` - Tension deformer (IMPLEMENTED)
+- ✅ `deltaMush` - Delta mush deformer (IMPLEMENTED)
+- ✅ `shrinkWrap` - Shrink wrap deformer (IMPLEMENTED)
+- ✅ `wrap` - Wrap deformer (IMPLEMENTED)
+- ✅ `nonLinear` - Non-linear deformers: bend, twist, sine, squash (IMPLEMENTED)
+- `nonLinear` - Non-linear deformers: flare, wave (still missing)
 
 **Deformer queries and management:**
-- List deformers on objects
+- ✅ List deformers on objects (IMPLEMENTED)
 - Get deformer weights
 - Set deformer weights
 - Remove deformers
@@ -160,18 +168,18 @@ This document outlines Maya.cmds API functionality that is **not currently cover
 ### 4. Advanced Constraints (Partially Covered)
 
 **Missing constraint types:**
-- `aimConstraint` - Aim constraint
-- `scaleConstraint` - Scale constraint
-- `geometryConstraint` - Geometry constraint
-- `normalConstraint` - Normal constraint
-- `tangentConstraint` - Tangent constraint
-- `poleVectorConstraint` - Pole vector constraint
+- ✅ `aimConstraint` - Aim constraint (IMPLEMENTED)
+- ✅ `scaleConstraint` - Scale constraint (IMPLEMENTED)
+- ✅ `geometryConstraint` - Geometry constraint (IMPLEMENTED)
+- ✅ `normalConstraint` - Normal constraint (IMPLEMENTED)
+- ✅ `tangentConstraint` - Tangent constraint (IMPLEMENTED)
+- ✅ `poleVectorConstraint` - Pole vector constraint (IMPLEMENTED)
 - `pointOnPolyConstraint` - Point on poly constraint
 - `pointOnCurveConstraint` - Point on curve constraint
 - `closestPointOnSurface` - Closest point constraint
 
 **Constraint management:**
-- Remove constraints
+- ✅ Remove constraints (IMPLEMENTED)
 - Get constraint targets
 - Set constraint weights
 - Enable/disable constraints
@@ -206,14 +214,14 @@ This document outlines Maya.cmds API functionality that is **not currently cover
 - `animCurveEditor` - Graph editor operations
 - `dopeSheetEditor` - Dope sheet operations
 - `timeEditor` - Time editor operations
-- `bakeResults` - Bake animation
-- `bakeSimulation` - Bake simulation
-- `copyKey` - Copy keyframes
-- `pasteKey` - Paste keyframes
-- `scaleKey` - Scale keyframes
-- `snapKey` - Snap keyframes
-- `selectKey` - Select keyframes
-- `keyframe` - More keyframe operations
+- ✅ `bakeResults` - Bake animation (IMPLEMENTED)
+- ✅ `bakeSimulation` - Bake simulation (IMPLEMENTED)
+- ✅ `copyKey` - Copy keyframes (IMPLEMENTED)
+- ✅ `pasteKey` - Paste keyframes (IMPLEMENTED)
+- ✅ `scaleKey` - Scale keyframes (IMPLEMENTED)
+- ✅ `snapKey` - Snap keyframes (IMPLEMENTED)
+- ✅ `selectKey` - Select keyframes (IMPLEMENTED)
+- ✅ `keyframe` - More keyframe operations (IMPLEMENTED)
 - `findKeyframe` - Find keyframes
 - `keyTangent` - Keyframe tangents
 - `keyframeOutliner` - Keyframe outliner
@@ -235,12 +243,14 @@ This document outlines Maya.cmds API functionality that is **not currently cover
 - `animCurveUL` - Unitless-length curves
 - `animCurveUU` - Unitless-unitless curves
 
-### 7. Cameras (Not Covered)
+### 7. Cameras (Partially Covered)
 
 **Camera operations:**
-- `camera` - Create cameras
-- `lookThrough` - Look through camera
-- `viewFit` - Fit view
+- ✅ `camera` - Create cameras (IMPLEMENTED)
+- ✅ `lookThrough` - Look through camera (IMPLEMENTED)
+- ✅ `viewFit` - Fit view (IMPLEMENTED)
+- ✅ `viewSelected` - View selected (IMPLEMENTED)
+- ✅ Camera attributes (focal length) (IMPLEMENTED)
 - `viewPlace` - Place view
 - `viewSet` - Set view
 - `dolly` - Dolly camera
@@ -248,28 +258,28 @@ This document outlines Maya.cmds API functionality that is **not currently cover
 - `track` - Track camera
 - `truck` - Truck camera
 - `zoom` - Zoom camera
-- Camera attributes (focal length, aperture, etc.)
+- Camera attributes (aperture, etc.)
 - Stereo camera setup
 - Camera sequencer
 
 ### 8. Advanced Materials and Shading (Partially Covered)
 
 **Missing material types:**
-- `surfaceShader` - Surface shader
-- `useBackground` - Use background
-- `layeredShader` - Layered shader
-- `rampShader` - Ramp shader
-- `shadingNode` - Generic shading node creation
+- ✅ `surfaceShader` - Surface shader (IMPLEMENTED)
+- ✅ `useBackground` - Use background (IMPLEMENTED)
+- ✅ `layeredShader` - Layered shader (IMPLEMENTED)
+- ✅ `rampShader` - Ramp shader (IMPLEMENTED)
+- ✅ `shadingNode` - Generic shading node creation (IMPLEMENTED)
 - `aiStandardSurface` - Arnold materials (if available)
 - `aiStandardHair` - Arnold hair materials
 - `aiVolume` - Arnold volume materials
 
 **Missing texture operations:**
-- `file` - File texture node
-- `place2dTexture` - 2D texture placement
+- ✅ `file` - File texture node (IMPLEMENTED)
+- ✅ `place2dTexture` - 2D texture placement (IMPLEMENTED)
+- ✅ `ramp` - Ramp texture (IMPLEMENTED)
 - `place3dTexture` - 3D texture placement
 - `projection` - Projection node
-- `ramp` - Ramp texture
 - `noise` - Noise texture
 - `fractal` - Fractal texture
 - `checker` - Checker texture
@@ -318,11 +328,12 @@ This document outlines Maya.cmds API functionality that is **not currently cover
 - Hardware renderer settings
 - Vector renderer settings
 
-### 10. Paint Operations (Not Covered)
+### 10. Paint Operations (Partially Covered)
 
 **Paint tools:**
+- ✅ `skinPercent` - Get/set skin weights (IMPLEMENTED)
 - `artisan` - Artisan paint tools
-- `paintSkinWeightsTool` - Paint skin weights
+- `paintSkinWeightsTool` - Paint skin weights (interactive tool)
 - `paintAttributesTool` - Paint attributes
 - `paintEffects` - Paint Effects
 - `paintFluid` - Paint fluid
@@ -411,13 +422,13 @@ This document outlines Maya.cmds API functionality that is **not currently cover
 - `polySelect` - Select polygon components
 - `polySelectConstraint` - Selection constraints
 - `polySelectEditCtx` - Selection edit context
-- `polySeparate` - Separate mesh
+- ✅ `polySeparate` - Separate mesh (IMPLEMENTED)
 - `polySetToFaceNormal` - Set to face normal
 - `polySmooth` - Smooth (more options)
 - `polySmoothFace` - Smooth faces
 - `polySnapUV` - Snap UVs
 - `polySphericalProjection` - Spherical UV projection
-- `polySplit` - Split faces
+- ✅ `polySplit` - Split faces (IMPLEMENTED)
 - `polySplitEdge` - Split edges
 - `polySplitRing` - Split ring
 - `polySplitVertex` - Split vertices
@@ -427,7 +438,7 @@ This document outlines Maya.cmds API functionality that is **not currently cover
 - `polyToSubdiv` - Convert to subdivision
 - `polyTransfer` - Transfer attributes
 - `polyTorus` - Create torus
-- `polyTriangulate` - Triangulate
+- ✅ `polyTriangulate` - Triangulate (IMPLEMENTED)
 - `polyUnite` - Already covered
 - `polyUniteSkinned` - Unite skinned meshes
 - `polyUniteUV` - Unite UVs
@@ -446,13 +457,13 @@ This document outlines Maya.cmds API functionality that is **not currently cover
 - `referenceQuery` - Query references
 - `file` - File reference operations (more options)
 
-### 14. Sets and Partitions (Not Covered)
+### 14. Sets and Partitions (Partially Covered)
 
 **Set operations:**
-- `sets` - Create sets
-- `partition` - Create partitions
-- `addToSet` - Add to set
-- `removeFromSet` - Remove from set
+- ✅ `sets` - Create sets (IMPLEMENTED)
+- ✅ `partition` - Create partitions (IMPLEMENTED)
+- ✅ `addToSet` - Add to set (IMPLEMENTED)
+- ✅ `removeFromSet` - Remove from set (IMPLEMENTED)
 
 ### 15. Expressions (Not Covered - Blocked for Safety)
 
@@ -470,11 +481,11 @@ This document outlines Maya.cmds API functionality that is **not currently cover
 ### 17. Advanced Selection (Partially Covered)
 
 **Missing selection operations:**
-- `select` - More selection options
-- `selectMode` - Selection mode
-- `selectType` - Selection type
-- `hilite` - Highlight
-- `selectPref` - Selection preferences
+- ✅ `select` - More selection options (IMPLEMENTED - with modes: replace, add, toggle, deselect)
+- ✅ `selectMode` - Selection mode (IMPLEMENTED)
+- ✅ `selectType` - Selection type (IMPLEMENTED)
+- ✅ `hilite` - Highlight (IMPLEMENTED)
+- ✅ `selectPref` - Selection preferences (IMPLEMENTED)
 - Component selection (vertices, edges, faces, UVs)
 - Selection sets
 - Selection constraints
@@ -530,10 +541,11 @@ This document outlines Maya.cmds API functionality that is **not currently cover
 ### 21. Viewport and Display (Partially Covered)
 
 **Missing viewport operations:**
-- `viewFit` - Fit view
+- ✅ `viewFit` - Fit view (IMPLEMENTED)
+- ✅ `viewSelected` - View selected (IMPLEMENTED)
 - `viewPlace` - Place view
 - `viewSet` - Set view
-- `lookThrough` - Look through
+- ✅ `lookThrough` - Look through camera (IMPLEMENTED)
 - `dolly` - Dolly
 - `tumble` - Tumble
 - `track` - Track
@@ -542,23 +554,15 @@ This document outlines Maya.cmds API functionality that is **not currently cover
 - `viewClipPlane` - View clip plane
 - `viewHeadOn` - View head on
 - `viewManip` - View manipulator
-- `viewSelected` - View selected
 - `view2dToolCtx` - 2D view tool
 - `view3dToolCtx` - 3D view tool
 - `viewAxis` - View axis
 - `viewBookmark` - View bookmarks
 - `viewCamera` - View camera
-- `viewClipPlane` - View clip plane
 - `viewColor` - View color
 - `viewCompass` - View compass
-- `viewFit` - Fit view
 - `viewFrame` - Frame view
-- `viewHeadOn` - Head on view
 - `viewLookAt` - Look at view
-- `viewManip` - View manipulator
-- `viewPlace` - Place view
-- `viewSelected` - View selected
-- `viewSet` - Set view
 - `viewTrack` - Track view
 
 ### 22. Advanced Animation Curves (Partially Covered)
@@ -623,7 +627,7 @@ This document outlines Maya.cmds API functionality that is **not currently cover
 - `copySkinWeights` - Copy skin weights
 - `exportSkinWeights` - Export skin weights
 - `importSkinWeights` - Import skin weights
-- `skinPercent` - Get/set skin weights
+- ✅ `skinPercent` - Get/set skin weights (IMPLEMENTED)
 - `bindSkin` - More bind options
 - `detachSkin` - Detach skin
 - `goToBindPose` - Go to bind pose
@@ -694,19 +698,22 @@ This document outlines Maya.cmds API functionality that is **not currently cover
 
 ### Coverage Estimate
 
-- **Currently Covered**: ~80-100 tools across 18 modules
+- **Currently Covered**: ~140+ tools across 24 modules
 - **Estimated Total Maya.cmds Commands**: ~500-800+ commands
-- **Coverage**: ~10-15% of available commands
+- **Coverage**: ~18-25% of available commands
 
 ### Priority Areas for Future Development
 
 1. **High Priority** (Common workflows):
-   - Polygon mesh editing operations (extrude, bevel, etc.)
-   - NURBS operations (curves and surfaces)
-   - Advanced constraints (aim, scale, geometry)
-   - Camera operations
-   - Advanced material/texture operations
-   - Paint tools (skin weights, attributes)
+   - ✅ Polygon mesh editing operations (extrude, bevel, normals, quadrangulate, reduce, remesh, UV operations, etc.) - EXTENSIVELY IMPLEMENTED
+   - ✅ NURBS operations (curves and surfaces) - PARTIALLY IMPLEMENTED
+   - ✅ Advanced constraints (aim, scale, geometry, normal, tangent, pole vector) - MOSTLY IMPLEMENTED
+   - ✅ Camera operations - PARTIALLY IMPLEMENTED
+   - ✅ Advanced material/texture operations (surface shader, use background, layered shader, ramp shader, generic shading nodes) - EXTENSIVELY IMPLEMENTED
+   - ✅ Paint tools (skin weights) - BASIC OPERATIONS IMPLEMENTED
+   - ✅ Animation tools (bake, copy/paste keyframes, scale/snap/select keyframes) - EXTENSIVELY IMPLEMENTED
+   - ✅ Deformers (sculpt, wire, wrinkle, jiggle, softMod, tension, deltaMush, shrinkWrap, wrap) - EXTENSIVELY IMPLEMENTED
+   - ✅ Sets and partitions - IMPLEMENTED
 
 2. **Medium Priority** (Specialized workflows):
    - Deformers

@@ -323,10 +323,239 @@ def revolve_curve(
         }
 
 
+@mcp.tool
+def create_nurbs_cylinder(
+    name: str | None = None,
+    radius: float = 1.0,
+    height: float = 2.0
+) -> dict[str, Any]:
+    """Create a NURBS cylinder.
+    
+    Args:
+        name: Optional name for the cylinder.
+        radius: Radius of the cylinder.
+        height: Height of the cylinder.
+    
+    Returns:
+        Dictionary with 'status', 'cylinder' (transform name), and 'shape' (shape name).
+    """
+    try:
+        import maya.cmds as cmds
+    except ImportError:
+        return {
+            'status': 'error',
+            'message': 'Maya is not available',
+        }
+    
+    try:
+        kwargs = {
+            'radius': radius,
+            'heightRatio': height / radius,
+        }
+        if name:
+            kwargs['name'] = name
+        
+        result = cmds.cylinder(**kwargs)
+        transform = result[0] if result else None
+        shape = result[1] if len(result) > 1 else None
+        
+        return {
+            'status': 'success',
+            'message': f'Created NURBS cylinder: {transform}',
+            'cylinder': transform,
+            'shape': shape,
+        }
+    except RuntimeError as err:
+        return {
+            'status': 'error',
+            'message': f'Maya error: {err}',
+        }
+    except Exception as err:
+        return {
+            'status': 'error',
+            'message': f'Unexpected error: {err}',
+        }
+
+
+@mcp.tool
+def attach_curves(
+    curve1: str,
+    curve2: str,
+    name: str | None = None
+) -> dict[str, Any]:
+    """Attach two NURBS curves together.
+    
+    Args:
+        curve1: First curve name.
+        curve2: Second curve name.
+        name: Optional name for the result.
+    
+    Returns:
+        Dictionary with 'status', 'curve' (result curve), and 'message'.
+    """
+    try:
+        import maya.cmds as cmds
+    except ImportError:
+        return {
+            'status': 'error',
+            'message': 'Maya is not available',
+        }
+    
+    try:
+        if not cmds.objExists(curve1):
+            return {
+                'status': 'error',
+                'message': f'Curve "{curve1}" does not exist',
+            }
+        
+        if not cmds.objExists(curve2):
+            return {
+                'status': 'error',
+                'message': f'Curve "{curve2}" does not exist',
+            }
+        
+        kwargs = {}
+        if name:
+            kwargs['name'] = name
+        
+        result = cmds.attachCurve(curve1, curve2, **kwargs)
+        curve = result[0] if result else None
+        
+        return {
+            'status': 'success',
+            'message': f'Attached curves {curve1} and {curve2}',
+            'curve': curve,
+        }
+    except RuntimeError as err:
+        return {
+            'status': 'error',
+            'message': f'Maya error: {err}',
+        }
+    except Exception as err:
+        return {
+            'status': 'error',
+            'message': f'Unexpected error: {err}',
+        }
+
+
+@mcp.tool
+def close_curve(
+    curve_name: str
+) -> dict[str, Any]:
+    """Close a NURBS curve.
+    
+    Args:
+        curve_name: Name of the curve to close.
+    
+    Returns:
+        Dictionary with 'status', 'curve' (closed curve), and 'message'.
+    """
+    try:
+        import maya.cmds as cmds
+    except ImportError:
+        return {
+            'status': 'error',
+            'message': 'Maya is not available',
+        }
+    
+    try:
+        if not cmds.objExists(curve_name):
+            return {
+                'status': 'error',
+                'message': f'Curve "{curve_name}" does not exist',
+            }
+        
+        result = cmds.closeCurve(curve_name)
+        curve = result[0] if result else None
+        
+        return {
+            'status': 'success',
+            'message': f'Closed curve {curve_name}',
+            'curve': curve,
+        }
+    except RuntimeError as err:
+        return {
+            'status': 'error',
+            'message': f'Maya error: {err}',
+        }
+    except Exception as err:
+        return {
+            'status': 'error',
+            'message': f'Unexpected error: {err}',
+        }
+
+
+@mcp.tool
+def create_planar_surface(
+    curves: list[str],
+    name: str | None = None
+) -> dict[str, Any]:
+    """Create a planar NURBS surface from curves.
+    
+    Args:
+        curves: List of curve names forming a closed boundary.
+        name: Optional name for the surface.
+    
+    Returns:
+        Dictionary with 'status', 'surface' (transform name), and 'shape' (shape name).
+    """
+    try:
+        import maya.cmds as cmds
+    except ImportError:
+        return {
+            'status': 'error',
+            'message': 'Maya is not available',
+        }
+    
+    if not curves:
+        return {
+            'status': 'error',
+            'message': 'No curves provided',
+        }
+    
+    try:
+        existing = [curve for curve in curves if cmds.objExists(curve)]
+        
+        if not existing:
+            return {
+                'status': 'error',
+                'message': f'None of the curves exist: {curves}',
+            }
+        
+        kwargs = {}
+        if name:
+            kwargs['name'] = name
+        
+        result = cmds.planar(existing, **kwargs)
+        transform = result[0] if result else None
+        shape = result[1] if len(result) > 1 else None
+        
+        return {
+            'status': 'success',
+            'message': f'Created planar surface from {len(existing)} curve(s)',
+            'surface': transform,
+            'shape': shape,
+        }
+    except RuntimeError as err:
+        return {
+            'status': 'error',
+            'message': f'Maya error: {err}',
+        }
+    except Exception as err:
+        return {
+            'status': 'error',
+            'message': f'Unexpected error: {err}',
+        }
+
+
 __all__ = [
     'create_nurbs_circle',
     'create_nurbs_sphere',
+    'create_nurbs_cylinder',
     'create_curve_from_points',
+    'attach_curves',
+    'close_curve',
     'loft_surfaces',
     'revolve_curve',
+    'create_planar_surface',
 ]
