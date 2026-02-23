@@ -10,6 +10,9 @@ def _fix_maya_stdio_early() -> None:
     
     This must be called before importing FastMCP to ensure sys.stdin.buffer,
     sys.stdout.buffer, and sys.stderr.buffer exist when FastMCP tries to access them.
+    
+    Uses file descriptors when available, otherwise creates proper TextIOWrapper/BufferedWriter
+    objects that anyio can work with.
     """
     def _needs_fix(stream) -> bool:
         """Check if a stream needs fixing."""
@@ -21,13 +24,57 @@ def _fix_maya_stdio_early() -> None:
             return True
         return False
     
-    def _create_buffer_wrapper(stream_obj, is_input: bool = True):
-        """Create a binary buffer wrapper for a stream."""
+    def _fix_stream(stream, is_input: bool = True, name: str = 'stream'):
+        """Fix a stdio stream by creating proper TextIOWrapper/BufferedWriter."""
+        try:
+            # Try to get file descriptor first (most compatible approach)
+            if hasattr(stream, 'fileno'):
+                try:
+                    fd = stream.fileno()
+                    # Create proper binary buffer from file descriptor
+                    if is_input:
+                        binary_buffer = io.FileIO(fd, 'rb')
+                    else:
+                        binary_buffer = io.FileIO(fd, 'wb')
+                    # Create TextIOWrapper that wraps the binary buffer
+                    text_wrapper = io.TextIOWrapper(
+                        binary_buffer,
+                        encoding='utf-8',
+                        line_buffering=not is_input  # Line buffering for output streams
+                    )
+                    return text_wrapper
+                except (OSError, AttributeError, ValueError):
+                    # File descriptor approach failed, fall through to wrapper approach
+                    pass
+        except (AttributeError, OSError):
+            # No fileno method, fall through to wrapper approach
+            pass
+        
+        # Fallback: Create wrapper with proper buffer that anyio can use
         class BufferWrapper(io.BufferedIOBase):
-            """Binary buffer wrapper for streams that FastMCP can use."""
+            """Binary buffer wrapper for streams that anyio can use."""
             def __init__(self, stream):
                 super().__init__()
                 self._stream = stream
+                self._closed = False
+                # Try to get fileno if available
+                try:
+                    if hasattr(stream, 'fileno'):
+                        self._fd = stream.fileno()
+                    else:
+                        self._fd = None
+                except (OSError, AttributeError):
+                    self._fd = None
+            
+            def fileno(self) -> int:
+                """Return file descriptor if available."""
+                if self._fd is not None:
+                    return self._fd
+                raise OSError("fileno not available")
+            
+            def closed(self) -> bool:
+                """Check if buffer is closed."""
+                return self._closed
             
             def read(self, size: int = -1) -> bytes:
                 """Read bytes from stream."""
@@ -53,17 +100,13 @@ def _fix_maya_stdio_early() -> None:
                         return text
                 return b''
             
-            def readlines(self, hint: int = -1) -> list[bytes]:
-                """Read all lines from stream."""
+            def readinto(self, buffer) -> int:
+                """Read bytes into a buffer."""
                 if not is_input:
                     raise OSError("not readable")
-                if hasattr(self._stream, 'readlines'):
-                    lines = self._stream.readlines(hint if hint > 0 else -1)
-                    return [
-                        line.encode('utf-8') if isinstance(line, str) else line
-                        for line in lines
-                    ]
-                return []
+                data = self.read(len(buffer))
+                buffer[:len(data)] = data
+                return len(data)
             
             def write(self, data: bytes) -> int:
                 """Write bytes to stream."""
@@ -90,18 +133,24 @@ def _fix_maya_stdio_early() -> None:
                 if hasattr(self._stream, 'flush'):
                     self._stream.flush()
             
-            def __iter__(self):
-                """Make buffer iterable."""
+            def close(self) -> None:
+                """Close the stream."""
+                if not self._closed:
+                    self._closed = True
+                    if hasattr(self._stream, 'close'):
+                        try:
+                            self._stream.close()
+                        except (OSError, AttributeError):
+                            pass
+            
+            def __enter__(self):
+                """Context manager entry."""
                 return self
             
-            def __next__(self):
-                """Get next line."""
-                if not is_input:
-                    raise StopIteration
-                line = self.readline()
-                if not line:
-                    raise StopIteration
-                return line
+            def __exit__(self, exc_type, exc_val, exc_tb):
+                """Context manager exit."""
+                self.close()
+                return False
             
             def readable(self) -> bool:
                 """Check if buffer is readable."""
@@ -115,15 +164,17 @@ def _fix_maya_stdio_early() -> None:
                 """Check if buffer is seekable."""
                 return False
         
-        return BufferWrapper(stream_obj)
-    
-    def _create_stdio_wrapper(original_stream, is_input: bool = True):
-        """Create a wrapper for a stdio stream that provides buffer attribute."""
         class StdioWrapper:
             """Wrapper for stdio streams that provides buffer attribute for Maya compatibility."""
             def __init__(self, original):
                 self._original = original
-                self.buffer = _create_buffer_wrapper(original, is_input=is_input)
+                self.buffer = BufferWrapper(original)
+                # Try to preserve fileno if available
+                try:
+                    if hasattr(original, 'fileno'):
+                        self.fileno = original.fileno
+                except (AttributeError, OSError):
+                    pass
             
             def __getattr__(self, name):
                 # Delegate all other attributes to the original stream
@@ -159,19 +210,19 @@ def _fix_maya_stdio_early() -> None:
                     """Flush the stream."""
                     return self._original.flush()
         
-        return StdioWrapper(original_stream)
+        return StdioWrapper(stream)
     
     # Fix stdin
     if _needs_fix(sys.stdin):
-        sys.stdin = _create_stdio_wrapper(sys.stdin, is_input=True)
+        sys.stdin = _fix_stream(sys.stdin, is_input=True, name='stdin')
     
     # Fix stdout
     if _needs_fix(sys.stdout):
-        sys.stdout = _create_stdio_wrapper(sys.stdout, is_input=False)
+        sys.stdout = _fix_stream(sys.stdout, is_input=False, name='stdout')
     
     # Fix stderr
     if _needs_fix(sys.stderr):
-        sys.stderr = _create_stdio_wrapper(sys.stderr, is_input=False)
+        sys.stderr = _fix_stream(sys.stderr, is_input=False, name='stderr')
 
 # Apply the fix early, before importing FastMCP
 _fix_maya_stdio_early()
