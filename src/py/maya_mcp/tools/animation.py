@@ -743,6 +743,345 @@ def query_keyframe_info(
         }
 
 
+@mcp.tool
+def find_keyframe(
+    attribute: str,
+    time: float,
+    direction: str = 'both'
+) -> dict[str, Any]:
+    """Find the nearest keyframe to a given time.
+    
+    Args:
+        attribute: Attribute name (e.g., 'pCube1.translateX').
+        time: Time value to search from.
+        direction: Search direction: 'forward', 'backward', or 'both' (default).
+    
+    Returns:
+        Dictionary with 'status', 'keyframe_time', and 'message'.
+    """
+    try:
+        import maya.cmds as cmds
+    except ImportError:
+        return {
+            'status': 'error',
+            'message': 'Maya is not available',
+            'keyframe_time': None,
+        }
+    
+    try:
+        if not cmds.objExists(attribute):
+            return {
+                'status': 'error',
+                'message': f'Attribute "{attribute}" does not exist',
+                'keyframe_time': None,
+            }
+        
+        kwargs = {
+            'time': time,
+        }
+        if direction == 'forward':
+            kwargs['which'] = 'next'
+        elif direction == 'backward':
+            kwargs['which'] = 'previous'
+        else:  # both
+            kwargs['which'] = 'both'
+        
+        result = cmds.findKeyframe(attribute, **kwargs)
+        
+        return {
+            'status': 'success',
+            'message': f'Found keyframe at time {result}',
+            'keyframe_time': result,
+            'attribute': attribute,
+            'search_time': time,
+            'direction': direction,
+        }
+    except RuntimeError as err:
+        return {
+            'status': 'error',
+            'message': f'Maya error: {err}',
+            'keyframe_time': None,
+        }
+    except Exception as err:
+        return {
+            'status': 'error',
+            'message': f'Unexpected error: {err}',
+            'keyframe_time': None,
+        }
+
+
+@mcp.tool
+def set_keyframe_tangent(
+    attributes: list[str],
+    time_range: tuple[float, float] | None = None,
+    in_tangent_type: str | None = None,
+    out_tangent_type: str | None = None
+) -> dict[str, Any]:
+    """Set keyframe tangent types.
+    
+    Args:
+        attributes: List of attribute names.
+        time_range: Optional (start_time, end_time) tuple. If None, affect all keyframes.
+        in_tangent_type: In tangent type (e.g., 'auto', 'spline', 'linear', 'flat', 'step', 'stepnext', 'fixed', 'clamped', 'plateau').
+        out_tangent_type: Out tangent type (same options as in_tangent_type).
+    
+    Returns:
+        Dictionary with 'status' and 'message'.
+    """
+    try:
+        import maya.cmds as cmds
+    except ImportError:
+        return {
+            'status': 'error',
+            'message': 'Maya is not available',
+        }
+    
+    if not attributes:
+        return {
+            'status': 'error',
+            'message': 'No attributes provided',
+        }
+    
+    try:
+        kwargs = {}
+        if time_range:
+            kwargs['time'] = (time_range[0], time_range[1])
+        if in_tangent_type:
+            kwargs['inTangentType'] = in_tangent_type
+        if out_tangent_type:
+            kwargs['outTangentType'] = out_tangent_type
+        
+        if not (in_tangent_type or out_tangent_type):
+            return {
+                'status': 'error',
+                'message': 'Must specify at least one tangent type',
+            }
+        
+        cmds.keyTangent(attributes, **kwargs)
+        
+        return {
+            'status': 'success',
+            'message': f'Set tangent types for {len(attributes)} attribute(s)',
+            'attributes': attributes,
+        }
+    except RuntimeError as err:
+        return {
+            'status': 'error',
+            'message': f'Maya error: {err}',
+        }
+    except Exception as err:
+        return {
+            'status': 'error',
+            'message': f'Unexpected error: {err}',
+        }
+
+
+@mcp.tool
+def create_blend_node(
+    name: str | None = None
+) -> dict[str, Any]:
+    """Create a blend node for blending animation curves.
+    
+    Args:
+        name: Optional name for the blend node.
+    
+    Returns:
+        Dictionary with 'status', 'node' (node name), and 'message'.
+    """
+    try:
+        import maya.cmds as cmds
+    except ImportError:
+        return {
+            'status': 'error',
+            'message': 'Maya is not available',
+        }
+    
+    try:
+        kwargs = {}
+        if name:
+            kwargs['name'] = name
+        
+        node = cmds.blendNode(**kwargs)
+        
+        return {
+            'status': 'success',
+            'message': f'Created blend node: {node}',
+            'node': node,
+        }
+    except RuntimeError as err:
+        return {
+            'status': 'error',
+            'message': f'Maya error: {err}',
+        }
+    except Exception as err:
+        return {
+            'status': 'error',
+            'message': f'Unexpected error: {err}',
+        }
+
+
+@mcp.tool
+def create_character_set(
+    name: str | None = None,
+    attributes: list[str] | None = None
+) -> dict[str, Any]:
+    """Create a character set for animation.
+    
+    Args:
+        name: Optional name for the character set.
+        attributes: Optional list of attributes to include in the character set.
+    
+    Returns:
+        Dictionary with 'status', 'character' (character set name), and 'message'.
+    """
+    try:
+        import maya.cmds as cmds
+    except ImportError:
+        return {
+            'status': 'error',
+            'message': 'Maya is not available',
+        }
+    
+    try:
+        kwargs = {}
+        if name:
+            kwargs['name'] = name
+        
+        if attributes:
+            character = cmds.character(attributes, **kwargs)
+        else:
+            character = cmds.character(**kwargs)
+        
+        return {
+            'status': 'success',
+            'message': f'Created character set: {character}',
+            'character': character if isinstance(character, str) else character[0] if character else None,
+            'attributes': attributes or [],
+        }
+    except RuntimeError as err:
+        return {
+            'status': 'error',
+            'message': f'Maya error: {err}',
+        }
+    except Exception as err:
+        return {
+            'status': 'error',
+            'message': f'Unexpected error: {err}',
+        }
+
+
+@mcp.tool
+def create_animation_clip(
+    name: str,
+    time_range: tuple[float, float],
+    characters: list[str] | None = None
+) -> dict[str, Any]:
+    """Create an animation clip.
+    
+    Args:
+        name: Name for the animation clip.
+        time_range: (start_time, end_time) tuple.
+        characters: Optional list of character sets to include.
+    
+    Returns:
+        Dictionary with 'status', 'clip' (clip name), and 'message'.
+    """
+    try:
+        import maya.cmds as cmds
+    except ImportError:
+        return {
+            'status': 'error',
+            'message': 'Maya is not available',
+        }
+    
+    try:
+        kwargs = {
+            'name': name,
+            'startTime': time_range[0],
+            'endTime': time_range[1],
+        }
+        
+        if characters:
+            kwargs['character'] = characters
+        
+        clip = cmds.clip(**kwargs)
+        
+        return {
+            'status': 'success',
+            'message': f'Created animation clip: {clip}',
+            'clip': clip if isinstance(clip, str) else clip[0] if clip else None,
+            'time_range': time_range,
+        }
+    except RuntimeError as err:
+        return {
+            'status': 'error',
+            'message': f'Maya error: {err}',
+        }
+    except Exception as err:
+        return {
+            'status': 'error',
+            'message': f'Unexpected error: {err}',
+        }
+
+
+@mcp.tool
+def create_time_warp(
+    animation_curve: str,
+    time_range: tuple[float, float],
+    name: str | None = None
+) -> dict[str, Any]:
+    """Create a time warp node for time remapping.
+    
+    Args:
+        animation_curve: Name of the animation curve to warp.
+        time_range: (start_time, end_time) tuple for the warp.
+        name: Optional name for the time warp node.
+    
+    Returns:
+        Dictionary with 'status', 'time_warp' (node name), and 'message'.
+    """
+    try:
+        import maya.cmds as cmds
+    except ImportError:
+        return {
+            'status': 'error',
+            'message': 'Maya is not available',
+        }
+    
+    try:
+        if not cmds.objExists(animation_curve):
+            return {
+                'status': 'error',
+                'message': f'Animation curve "{animation_curve}" does not exist',
+            }
+        
+        kwargs = {
+            'time': (time_range[0], time_range[1]),
+        }
+        if name:
+            kwargs['name'] = name
+        
+        time_warp = cmds.timeWarp(animation_curve, **kwargs)
+        
+        return {
+            'status': 'success',
+            'message': f'Created time warp: {time_warp}',
+            'time_warp': time_warp if isinstance(time_warp, str) else time_warp[0] if time_warp else None,
+            'animation_curve': animation_curve,
+            'time_range': time_range,
+        }
+    except RuntimeError as err:
+        return {
+            'status': 'error',
+            'message': f'Maya error: {err}',
+        }
+    except Exception as err:
+        return {
+            'status': 'error',
+            'message': f'Unexpected error: {err}',
+        }
+
+
 __all__ = [
     'set_keyframe',
     'get_keyframe_times',
@@ -757,4 +1096,10 @@ __all__ = [
     'snap_keyframes',
     'select_keyframes',
     'query_keyframe_info',
+    'find_keyframe',
+    'set_keyframe_tangent',
+    'create_blend_node',
+    'create_character_set',
+    'create_animation_clip',
+    'create_time_warp',
 ]
